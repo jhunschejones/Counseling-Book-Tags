@@ -1,0 +1,19 @@
+html {
+  // Bulma `$white-bis`
+  background-color: hsl(0, 0%, 98%);
+  // Bulma `$white-ter`
+  // background-color: hsl(0, 0%, 96%);
+}
+
+// Override Bulma default hover state on hamburger menu button
+.navbar-burger:hover {
+  background-color: #FFF;
+}
+
+// Override Bulma menu shadow default for mobile screen
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    // box-shadow: 0 8px 16px rgba(10, 10, 10, 0.1); <- default
+    box-shadow: 0 22px 22px rgba(10, 10, 10, 0.07)
+  }
+}

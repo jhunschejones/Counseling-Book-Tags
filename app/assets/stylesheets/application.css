@@ -13,4 +13,7 @@
  *= require bulma
  * require_tree .
  *= require_self
+ *= require books
+ *= require tags
+ *= require site
  */

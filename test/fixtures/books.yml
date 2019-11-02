@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  goodreads_id: 1
+  title: Adventures in Ruby
+  author: Carl Fox
+  isbn: 1111
+  published_year: 2005
+  publisher: Fox Publications
+  cover_url:
+  description:
+  language:
+
+two:
+  goodreads_id: 2
+  title: Counseling 101
+  author: Carl Fox
+  isbn: 222
+  published_year: 2019
+  publisher: Fox Publications
+  cover_url:
+  description:
+  language:
