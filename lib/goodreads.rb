@@ -63,11 +63,11 @@ module Goodreads
 
   def self.format_description(description)
     description
-      .gsub("<br /><br /><br />", "<br /><br />") # replace 3 break characters with 2
-      .gsub("--back cover", "")
-      .gsub(/<i>|<\/i>/, "\"")
-      .split("Source: <")[0]
-      .gsub(/--\w*.com$/, "")
+      .gsub(/(<br \/>){1,3}/, "<br /><br />") # only include break tags in sets of 2
+      .gsub(/<i>|<\/i>/, "\"") # use quotes instead of <i> tags
+      .gsub("--back cover", "") # remove source citation
+      .split("Source: <")[0] # remove source citation
+      .gsub(/--\w*.com$/, "") # remove source citation
   end
 
   def self.transform_book_results(results, current_page)

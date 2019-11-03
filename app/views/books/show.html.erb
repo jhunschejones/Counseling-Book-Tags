@@ -10,7 +10,7 @@
   <div class="column">
     <div class="description">
     <% @book[:description].split("<br /><br />") do |paragraph| %>
-      <p class="description-paragraph"><%= sanitize_description_paragraph(paragraph) %></p>
+      <p class="description-paragraph"><%= paragraph %></p>
     <% end %>
     </div>
   </div>
