@@ -1,2 +1,17 @@
-<h1>Books#show</h1>
-<p>Find me in app/views/books/show.html.erb</p>
+<div class="book-details columns">
+  <div class="column is-two-fifths left-column">
+    <%= image_tag(@book[:cover_url], class: "cover", alt: "Book Cover") %>
+    <p class="title"><%= @book[:title] %></p>
+    <% @book[:authors].each do |author| %>
+      <h2 class="author"><%= author %></h2>
+    <% end %>
+    <p class="published"><%= @book[:publisher] %>&nbsp;&copy;<%= @book[:published_year] %></p>
+  </div>
+  <div class="column">
+    <div class="description">
+    <% @book[:description].split("<br /><br />") do |paragraph| %>
+      <p class="description-paragraph"><%= sanitize_description_paragraph(paragraph) %></p>
+    <% end %>
+    </div>
+  </div>
+</div>

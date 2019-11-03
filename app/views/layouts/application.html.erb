@@ -8,16 +8,19 @@
     <%= csp_meta_tag %>
 
     <%# Bulma Resources %>
-    <%# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> %>
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <%# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" integrity="sha384-5kGFOAqgEKnuF6c2jk2JANKHZgYVt38Wn2dVJENtq1EBCP54/1uzXU5mpxqL8WjN" crossorigin="anonymous"> %>
+    <%# <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script> %>
+    <script src="https://kit.fontawesome.com/feb7801734.js" integrity="sha384-MRXxKCO/IzQWKmH8v2WPtzcmR5YUcxkwSJxMA3ZpVyCgtZEeUwu2FbDGTaLiBmpY" crossorigin="anonymous"></script>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" data-controller="menu">
+    <nav class="navbar is-fixed-top is-white" role="navigation" aria-label="main navigation" data-controller="menu">
       <div class="navbar-brand">
+        <%= image_tag("logo.png", alt: "Site logo", id: "site-logo") %>
+        <h2 id="site-title" class="navbar-item">Counseling Book Tags</h2>
         <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="menu.navbarBurger" data-action="click->menu#toggle">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -27,8 +30,15 @@
 
       <div class="navbar-menu" data-target="menu.navbarMenu">
         <div class="navbar-start">
-          <a class="navbar-item">All Tags</a>
-          <a class="navbar-item">Search</a>
+          <div class="navbar-divider"></div>
+          <a class="navbar-item is-expanded nav-link">
+            <span class="icon has-text-danger"><i class="fas fa-tags"></i></span>
+            <span>&nbsp;&nbsp;All Tags</span>
+          </a>
+          <a class="navbar-item nav-link">
+            <span class="icon has-text-info"><i class="fas fa-search"></i></span>
+            <span>&nbsp;&nbsp;Search</span>
+          </a>
         </div>
 
         <div class="navbar-end">

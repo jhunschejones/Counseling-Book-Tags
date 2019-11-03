@@ -1,0 +1,56 @@
+<nav class="pagination is-small is-centered" role="navigation" aria-label="pagination">
+  <% if current_page == 1 %>
+    <div style="width:85px;order:1;"></div>
+  <% else %>
+    <%= link_to "Previous", search_results_page(current_page - 1), class: "pagination-previous" %>
+  <% end %>
+
+  <% if current_page == total_pages %>
+    <div style="width:85px;order:3;"></div>
+  <% else %>
+    <%= link_to "Next Page", search_results_page(current_page + 1), class: "pagination-next" %>
+  <% end %>
+
+  <ul class="pagination-list">
+    <% if total_pages < 4 %>
+      <% (current_page..total_pages).each do |page| %>
+        <li><a class="pagination-link" href="<%= search_results_page(page) %>"><%= page %></a></li>
+      <% end %>
+    <% else %>
+      <% case current_page %>
+      <% when 1 %>
+        <li><a class="pagination-link is-current"><%= current_page %></a></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page + 1) %>"><%= current_page + 1 %></a></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page + 2) %>"><%= current_page + 2 %></a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
+        <li><a class="pagination-link" href="<%= search_results_page(total_pages) %>"><%= total_pages %></a></li>
+      <% when 2 %>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page - 1) %>"><%= current_page - 1 %></a></li>
+        <li><a class="pagination-link is-current"><%= current_page %></a></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page + 1) %>"><%= current_page + 1 %></a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
+        <li><a class="pagination-link" href="<%= search_results_page(total_pages) %>"><%= total_pages %></a></li>
+      <% when 3..(total_pages - 2) %>
+        <li><a class="pagination-link" href="<%= search_results_page(1) %>">1</a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page - 1) %>"><%= current_page - 1 %></a></li>
+        <li><a class="pagination-link is-current"><%= current_page %></a></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page + 1) %>"><%= current_page + 1 %></a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
+        <li><a class="pagination-link" href="<%= search_results_page(total_pages) %>"><%= total_pages %></a></li>
+      <% when total_pages - 1 %>
+        <li><a class="pagination-link" href="<%= search_results_page(1) %>">1</a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page - 1) %>"><%= current_page - 1 %></a></li>
+        <li><a class="pagination-link is-current"><%= current_page %></a></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page + 1) %>"><%= current_page + 1 %></a></li>
+      <% when total_pages %>
+        <li><a class="pagination-link" href="<%= search_results_page(1) %>">1</a></li>
+        <li><span class="pagination-ellipsis">&hellip;</span></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page - 2) %>"><%= current_page - 2 %></a></li>
+        <li><a class="pagination-link" href="<%= search_results_page(current_page - 1) %>"><%= current_page - 1 %></a></li>
+        <li><a class="pagination-link is-current"><%= current_page %></a></li>
+      <% end %>
+    <% end %>
+  </ul>
+</nav>

@@ -18,8 +18,9 @@ ActiveRecord::Schema.define(version: 2019_11_01_042131) do
   create_table "books", force: :cascade do |t|
     t.integer "goodreads_id"
     t.string "title", null: false
-    t.string "author", null: false
+    t.string "authors", null: false, array: true
     t.integer "isbn", null: false
+    t.integer "isbn13", null: false
     t.integer "published_year", null: false
     t.string "publisher"
     t.string "cover_url"
@@ -29,7 +30,7 @@ ActiveRecord::Schema.define(version: 2019_11_01_042131) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["goodreads_id"], name: "index_books_on_goodreads_id", unique: true
     t.index ["isbn"], name: "index_books_on_isbn", unique: true
-    t.index ["title", "author"], name: "index_books_on_title_and_author", unique: true
+    t.index ["title", "authors"], name: "index_books_on_title_and_authors", unique: true
   end
 
   create_table "tags", force: :cascade do |t|
