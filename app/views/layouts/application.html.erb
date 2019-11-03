@@ -10,7 +10,7 @@
     <%# Bulma Resources %>
     <%# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" integrity="sha384-5kGFOAqgEKnuF6c2jk2JANKHZgYVt38Wn2dVJENtq1EBCP54/1uzXU5mpxqL8WjN" crossorigin="anonymous"> %>
     <%# <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" integrity="sha384-kW+oWsYx3YpxvjtZjFXqazFpA7UP/MbiY4jvs+RWZo2+N94PFZ36T6TFkc9O3qoB" crossorigin="anonymous"></script> %>
-    <script src="https://kit.fontawesome.com/feb7801734.js" crossorigin="anonymous" integrity="sha384-nqRFAmhaey1NTeGnGTWuarPi+4uSHJbQhyaD9DrXHU2lHlDAm4zScwcd0lx6TIyi"></script>
+    <%# <script src="https://kit.fontawesome.com/feb7801734.js" crossorigin="anonymous" integrity="sha384-nqRFAmhaey1NTeGnGTWuarPi+4uSHJbQhyaD9DrXHU2lHlDAm4zScwcd0lx6TIyi"></script> %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
@@ -32,11 +32,15 @@
         <div class="navbar-start">
           <div class="navbar-divider"></div>
           <a class="navbar-item is-expanded nav-link">
-            <span class="icon has-text-danger"><i class="fas fa-tags"></i></span>
+            <span class="icon has-text-danger">
+              <%= fa_icon("tags", class: "fas") %>
+            </span>
             <span>&nbsp;&nbsp;All Tags</span>
           </a>
           <a class="navbar-item nav-link">
-            <span class="icon has-text-info"><i class="fas fa-search"></i></span>
+            <span class="icon has-text-info">
+              <%= fa_icon("search", class: "fas") %>
+            </span>
             <span>&nbsp;&nbsp;Search</span>
           </a>
         </div>
