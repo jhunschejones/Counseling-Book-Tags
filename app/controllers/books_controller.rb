@@ -16,6 +16,10 @@ class BooksController < ApplicationController
   end
 
   def show
-    @book = Goodreads.book_details(params[:id])
+    if params[:source] == "goodreads"
+      @book = Goodreads.book_details(params[:id])
+    else
+      raise "Unrecognized source type"
+    end
   end
 end

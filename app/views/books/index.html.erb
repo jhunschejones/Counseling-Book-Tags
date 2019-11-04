@@ -3,7 +3,7 @@
   <p>No books match that search!</p>
 <% end %>
 <% @books.each do |book|%>
-  <a class="book-card" href="/books/<%= book[:goodreads_id] %>">
+  <a class="book-card" href="/books/<%= "#{book[:source_id]}?source=#{book[:source]}" %>">
     <%= image_tag(book[:cover_url], class: "cover", alt: "Book Cover") %>
     <div class="book-card-footer">
       <p class="title"><%= truncate(book[:title], length: 45) %></p>

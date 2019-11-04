@@ -1,7 +1,8 @@
 class CreateBooks < ActiveRecord::Migration[6.0]
   def change
     create_table :books do |t|
-      t.integer :goodreads_id
+      t.integer :source_id
+      t.string :source, null: false
       t.string :title, null: false
       t.string :authors, null: false, array: true
       t.integer :isbn, null: false
@@ -16,7 +17,7 @@ class CreateBooks < ActiveRecord::Migration[6.0]
     end
 
     add_index :books, [:title, :authors], unique: true
-    add_index :books, :goodreads_id, unique: true
+    add_index :books, [:source, :source_id], unique: true
     add_index :books, :isbn, unique: true
   end
 end

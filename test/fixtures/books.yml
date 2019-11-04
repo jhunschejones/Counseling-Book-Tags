@@ -1,7 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  goodreads_id: 1
+  source_id: 1
+  source: "goodreads"
   title: Adventures in Ruby
   author: Carl Fox
   isbn: 1111
@@ -12,7 +13,8 @@ one:
   language:
 
 two:
-  goodreads_id: 2
+  source_id: 2
+  source: "goodreads"
   title: Counseling 101
   author: Carl Fox
   isbn: 222

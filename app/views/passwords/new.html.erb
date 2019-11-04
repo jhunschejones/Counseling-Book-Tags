@@ -1,0 +1,9 @@
+<div class="password-reset-page">
+  <% if flash[:alert] %>
+    <div class="notification is-danger"><%= flash[:alert] %></div>
+  <% elsif flash[:notice] %>
+    <div class="notification is-warning"><%= flash[:notice] %></div>
+  <% end %>
+
+  <%= render 'form' %>
+</div>

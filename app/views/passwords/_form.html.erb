@@ -1,0 +1,40 @@
+<div class="password-reset-form">
+  <%= form_tag(password_reset_path) do %>
+    <h2>Reset Your Password</h2>
+
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" name="email" type="email" placeholder="Email">
+        <span class="icon is-small is-left">
+          <%= fa_icon("envelope", class: "fas") %>
+        </span>
+      </p>
+    </div>
+
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" name="password" type="password" placeholder="New password">
+        <span class="icon is-small is-left">
+          <%= fa_icon("lock", class: "fas") %>
+        </span>
+      </p>
+    </div>
+
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" type="password" placeholder="Confirm" name="password_confirmation">
+        <span class="icon is-small is-left">
+          <i class="fas fa-lock"></i>
+        </span>
+      </p>
+    </div>
+
+    <input type="hidden" name="token" value="<%= params[:token] %>" />
+
+    <div class="field">
+      <div class="control">
+        <%= submit_tag "Reset", class: "button is-primary" %>
+      </div>
+    </div>
+  <% end %>
+</div>

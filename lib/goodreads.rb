@@ -39,7 +39,8 @@ module Goodreads
           ]
         end
       {
-        goodreads_id: book["id"],
+        source_id: book["id"].to_i,
+        source: "goodreads",
         title: book["title"],
         authors: authors,
         isbn: book["isbn"].to_i,
@@ -91,7 +92,8 @@ module Goodreads
           # do not return books without a photo
           book_result["best_book"]["image_url"].include?("nophoto") ? nil :
             {
-              goodreads_id: book_result["best_book"]["id"],
+              source_id: book_result["best_book"]["id"].to_i,
+              source: "goodreads",
               title: book_result["best_book"]["title"],
               author: book_result["best_book"]["author"]["name"],
               published_year: book_result["original_publication_year"].to_i,

@@ -1,0 +1,39 @@
+<div class="edit-user">
+  <% if flash[:alert] %>
+    <div class="notification is-danger"><%= flash[:alert] %></div>
+  <% elsif flash[:notice] %>
+    <div class="notification is-warning"><%= flash[:notice] %></div>
+  <% end %>
+
+  <h2>Edit User Details</h2>
+  <div class="user-edit-form">
+    <%= form_for @user do |f| %>
+      <div class="field">
+        <p class="control has-icons-left">
+          <%= f.text_field :name, class: "input" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+        </p>
+      </div>
+
+      <div class="field">
+        <p class="control has-icons-left">
+          <%= f.text_field :email, class: "input" %>
+          <span class="icon is-small is-left">
+            <%= fa_icon("envelope", class: "fas") %>
+          </span>
+        </p>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <%= f.submit "Update", class: "button is-warning" %>
+        </div>
+        <div class="control">
+          <%= link_to "Cancel", user_path(@user), class: "button is-info" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="login-form" data-controller="login">
+  <% if flash[:alert] %>
+    <div class="notification is-danger"><%= flash[:alert] %></div>
+  <% elsif flash[:notice] %>
+    <div class="notification is-warning"><%= flash[:notice] %></div>
+  <% end %>
+
+  <%= form_tag do %>
+    <h2>Please Log In</h2>
+
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" name="email" type="email" placeholder="Email">
+        <span class="icon is-small is-left">
+          <%= fa_icon("envelope", class: "fas") %>
+        </span>
+      </p>
+    </div>
+
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" name="password" type="password" placeholder="Password">
+        <span class="icon is-small is-left">
+          <%= fa_icon("lock", class: "fas") %>
+        </span>
+      </p>
+    </div>
+
+    <div class="field">
+      <%= link_to "Forgot password?", "", "data-target": "login.forgotPassword" %>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <%= submit_tag "Login", class: "button is-primary" %>
+      </div>
+    </div>
+
+    <div style="display:none;">
+      <%= submit_tag "Forgot password?", formaction: password_forgot_path, id: "password-reset-link" %>
+    </div>
+  <% end %>
+</div>

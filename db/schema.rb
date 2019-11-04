@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_01_042131) do
+ActiveRecord::Schema.define(version: 2019_11_04_033657) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "books", force: :cascade do |t|
-    t.integer "goodreads_id"
+    t.integer "source_id"
+    t.string "source", null: false
     t.string "title", null: false
     t.string "authors", null: false, array: true
     t.integer "isbn", null: false
@@ -28,8 +29,8 @@ ActiveRecord::Schema.define(version: 2019_11_01_042131) do
     t.string "language"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["goodreads_id"], name: "index_books_on_goodreads_id", unique: true
     t.index ["isbn"], name: "index_books_on_isbn", unique: true
+    t.index ["source", "source_id"], name: "index_books_on_source_and_source_id", unique: true
     t.index ["title", "authors"], name: "index_books_on_title_and_authors", unique: true
   end
 
@@ -50,6 +51,12 @@ ActiveRecord::Schema.define(version: 2019_11_01_042131) do
     t.string "password_digest", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.string "email_verification_token"
+    t.datetime "email_verification_sent_at"
+    t.string "unconfirmed_email"
+    t.boolean "verified", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

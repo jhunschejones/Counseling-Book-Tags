@@ -1,0 +1,35 @@
+.new-user {
+  margin: 12px;
+  h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .error_explanation {
+    // style this here
+  }
+}
+
+.edit-user {
+  margin: 12px;
+  h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+}
+
+.show-user {
+  margin: 12px;
+  h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .label {
+    // Bulma `$grey-light`
+    color: hsl(0, 0%, 71%);
+    font-weight: 400;
+    display: inline;
+  }
+  .edit-button {
+    margin-top: 10px;
+  }
+}

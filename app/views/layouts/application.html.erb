@@ -48,12 +48,12 @@
         <div class="navbar-end">
           <div class="navbar-item">
             <div class="buttons">
-              <a class="button is-primary">
-                <strong>Sign up</strong>
-              </a>
-              <a class="button is-light">
-                Log in
-              </a>
+              <% if @user && !@user.new_record? %>
+                <%= link_to 'Logout', logout_path, method: :delete, class: "button is-danger" %>
+              <% else %>
+                <a class="button is-primary" href="/users/new"><strong>Sign up</strong></a>
+                <a class="button is-light" href="/login">Log in</a>
+              <% end %>
             </div>
           </div>
         </div>

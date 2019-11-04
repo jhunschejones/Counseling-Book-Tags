@@ -1,0 +1,6 @@
+Welcome to Counseling Book Tags, <%= @user.name %>
+===============================================
+
+You have successfully signed up for counselingbooktags.com.
+To verify your account, please follow this link:
+<%= email_verify_url(token: @user.email_verification_token) %>

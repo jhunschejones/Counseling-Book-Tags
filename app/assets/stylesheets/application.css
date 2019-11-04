@@ -15,6 +15,9 @@
  *= require_self
  *= require books
  *= require tags
+ *= require users
+ *= require sessions
  *= require site
+ *= require passwords
  *= require font_awesome5_webfont
  */
