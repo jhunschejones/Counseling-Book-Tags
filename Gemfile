@@ -24,7 +24,7 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'httparty'
 
-gem 'font-awesome-rails'
+gem 'font_awesome5_rails'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
