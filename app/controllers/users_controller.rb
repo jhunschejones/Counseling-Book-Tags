@@ -6,9 +6,11 @@ class UsersController < ApplicationController
   end
 
   def show
+    redirect_to user_path(@user) if params[:id].to_i != @user.id
   end
 
   def edit
+    redirect_to edit_user_path(@user) if params[:id].to_i != @user.id
   end
 
   def update
