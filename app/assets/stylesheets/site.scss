@@ -28,15 +28,20 @@ html {
 .navbar-brand {
   display: flex;
   align-items: center;
-  #site-logo {
-    margin: 0px 0px 0px 14px;
-    height: 40px;
+  // #site-logo {
+  //   margin: 0px 0px 0px 14px;
+  //   height: 40px;
+  // }
+  .icon {
+    margin-right: -7px;
+    margin-left: 6px;
+    margin-top: -4px;
   }
   #site-title{
-    // bulma `$primary`
-    color: hsl(171, 100%, 41%);
-    font-weight: 300;
-    font-size: 26px;
+    font-size: 20px;
+    padding-right: 14px;
+    margin-bottom: -2px;
+    border-right: 0.5px solid hsl(0, 0%, 92%);
     &:hover {
       cursor: default;
     }

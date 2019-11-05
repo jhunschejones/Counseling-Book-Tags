@@ -7,8 +7,72 @@
     <% end %>
     <p class="published"><%= @book[:publisher] %>&nbsp;&copy;<%= @book[:published_year] %></p>
   </div>
-  <div class="column">
-    <div class="description">
+  <div class="column" data-controller="book">
+    <div class="tabs is-centered is-boxed">
+      <ul>
+        <li class="is-active tab" data-action="click->book#changeTab" data-tab="user-tags">
+          <a>
+            <span class="icon is-small"><i class="fas fa-tags" aria-hidden="true"></i></span>
+            <span>Tags</span>
+          </a>
+        </li>
+        <li class="tab" data-action="click->book#changeTab" data-tab="comments">
+          <a>
+            <span class="icon is-small"><i class="fas fa-comment" aria-hidden="true"></i></span>
+            <span>Comments</span>
+          </a>
+        </li>
+        <li class="tab" data-action="click->book#changeTab" data-tab="description">
+          <a>
+            <span class="icon is-small"><i class="fas fa-info-circle" aria-hidden="true"></i></span>
+            <span>Description</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="tab-content user-tags is-active">
+      <div class="add-tag-button-row">
+        <button class="button is-warning is-small is-rounded">
+          <span class="icon">
+            <i class="fas fa-plus"></i>
+          </span>
+          <span>Add a tag</span>
+        </button>
+      </div>
+
+      <div class="field is-grouped is-grouped-multiline">
+        <div class="control">
+          <div class="tags has-addons">
+            <a class="tag is-info is-medium">Fantasy</a>
+            <a class="tag is-delete is-info is-medium"></a>
+          </div>
+        </div>
+
+        <div class="control">
+          <div class="tags has-addons">
+            <a class="tag is-info is-medium">Strong Character Archytypes</a>
+            <a class="tag is-delete is-info is-medium"></a>
+          </div>
+        </div>
+
+        <div class="control">
+          <div class="tags has-addons">
+            <a class="tag is-info is-medium">Female Lead</a>
+            <a class="tag is-delete is-info is-medium"></a>
+          </div>
+        </div>
+
+        <div class="control">
+          <div class="tags has-addons">
+            <a class="tag is-info is-medium">Magic</a>
+            <a class="tag is-delete is-info is-medium"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content comments">
+    </div>
+    <div class="tab-content description">
     <% @book[:description].split("<br /><br />") do |paragraph| %>
       <p class="description-paragraph"><%= paragraph %></p>
     <% end %>
