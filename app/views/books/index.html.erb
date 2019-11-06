@@ -1,16 +1,24 @@
 <div class="books">
-<% if @books.length == 0 %>
-  <p>No books match that search!</p>
-<% end %>
-<% @books.each do |book|%>
-  <a class="book-card" href="/books/<%= "#{book[:source_id]}?source=#{book[:source]}" %>">
-    <%= image_tag(book[:cover_url], class: "cover", alt: "Book Cover") %>
-    <div class="book-card-footer">
-      <p class="title"><%= truncate(book[:title], length: 45) %></p>
-      <p class="author"><%= truncate(book[:author], length: 46) %></p>
+  <% if @books %>
+    <% if @books.length == 0 %>
+      <p>No books match that search!</p>
+    <% end %>
+    <div class="book-results">
+      <% @books.each do |book|%>
+        <a class="book-card" href="/books/<%= "#{book[:source_id]}?source=#{book[:source]}" %>">
+          <%= image_tag(book[:cover_url], class: "cover", alt: "Book Cover") %>
+          <div class="book-card-footer">
+            <p class="title"><%= truncate(book[:title], length: 45) %></p>
+            <p class="author"><%= truncate(book[:author], length: 46) %></p>
+          </div>
+        </a>
+      <% end %>
     </div>
-  </a>
-<% end %>
+  <% else %>
+    <%= render partial: "search" %>
+  <% end %>
 </div>
 
-<%= render partial: "pagination", locals: { current_page: @current_page, total_pages: @total_pages } %>
+<% if @total_pages && @total_pages > 1 %>
+  <%= render partial: "pagination", locals: { current_page: @current_page, total_pages: @total_pages } %>
+<% end %>

@@ -3,27 +3,61 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .books {
-  margin: 12px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  .book-card {
-    color: #0a0a0a; // override default link coloring
-    margin: 10px;
-    width: 200px;
-    .cover {
-      border-radius: 4px;
-      box-shadow: 8px 8px 16px -2px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.02);
+  .search-container {
+    .search-spacer {
+      margin-top: 100px;
     }
-    .book-card-footer {
-      margin: 0px 5px 2px 2px;
-      line-height: 1.25;
-      .title {
-        font-weight: 600;
+    margin: 0px 12px;
+    @media screen and (min-width: 680px) {
+      margin: 0px 60px;
+    }
+  }
+  .search-panel-container {
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+    .panel {
+      min-width: 300px;
+      max-width: 600px;
+      flex-shrink: 1;
+      flex-grow: 1;
+      .panel-tabs {
+        a {
+          font-size: 16px;
+        }
       }
-      .author {
-        // bulma `$grey-dark`
-        color: hsl(0, 0%, 29%);
+      .radio-header {
+        // bulma `$grey-light`
+        color: hsl(0, 0%, 71%);
+      }
+      .radio-option {
+        margin-left: 6px;
+      }
+    }
+  }
+  .book-results {
+    margin: 12px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    .book-card {
+      color: #0a0a0a; // override default link coloring
+      margin: 10px;
+      width: 200px;
+      .cover {
+        border-radius: 4px;
+        box-shadow: 8px 8px 16px -2px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.02);
+      }
+      .book-card-footer {
+        margin: 0px 5px 2px 2px;
+        line-height: 1.25;
+        .title {
+          font-weight: 600;
+        }
+        .author {
+          // bulma `$grey-dark`
+          color: hsl(0, 0%, 29%);
+        }
       }
     }
   }
@@ -88,6 +122,7 @@
   }
   .user-tags {
     .tags {
+      border-radius: 10px;
       .tag.is-delete {
         &:hover {
           // manually adjusted lighter version of `$primary`
@@ -100,6 +135,30 @@
     .add-tag-button-row {
       margin-bottom: 20px;
       margin-top: -8px;
+    }
+    .modal {
+      .close-tag-modal {
+        margin-right: -16px;
+        padding-top: 10px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      // Override bulma styles
+      header,
+      .modal-card-body,
+      footer {
+        // Bulma `$white-ter`
+        background-color: hsl(0, 0%, 96%);
+        border: none;
+        padding: 10px 30px;
+      }
+      footer {
+        padding-bottom: 15px;
+      }
+      .create-tag-button {
+        margin-top: 12px;
+      }
     }
   }
 }

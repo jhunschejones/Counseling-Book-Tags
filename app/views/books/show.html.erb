@@ -16,12 +16,14 @@
             <span>Tags</span>
           </a>
         </li>
+        <%#
         <li class="tab" data-action="click->book#changeTab" data-tab="comments">
           <a>
             <span class="icon is-small"><i class="fas fa-comment" aria-hidden="true"></i></span>
             <span>Comments</span>
           </a>
         </li>
+        %>
         <li class="tab" data-action="click->book#changeTab" data-tab="description">
           <a>
             <span class="icon is-small"><i class="fas fa-info-circle" aria-hidden="true"></i></span>
@@ -30,9 +32,9 @@
         </li>
       </ul>
     </div>
-    <div class="tab-content user-tags is-active">
+    <div class="tab-content user-tags is-active" data-controller="tag-modal">
       <div class="add-tag-button-row">
-        <button class="button is-warning is-small is-rounded">
+        <button class="button is-warning is-small is-rounded" data-action="click->tag-modal#open">
           <span class="icon">
             <i class="fas fa-plus"></i>
           </span>
@@ -40,38 +42,23 @@
         </button>
       </div>
 
-      <div class="field is-grouped is-grouped-multiline">
-        <div class="control">
-          <div class="tags has-addons">
-            <a class="tag is-info is-medium">Fantasy</a>
-            <a class="tag is-delete is-info is-medium"></a>
-          </div>
-        </div>
+      <%= render partial: "add_tag_modal", locals: { book: @book } %>
 
-        <div class="control">
-          <div class="tags has-addons">
-            <a class="tag is-info is-medium">Strong Character Archytypes</a>
-            <a class="tag is-delete is-info is-medium"></a>
+      <div class="field is-grouped is-grouped-multiline tags-container">
+        <% @tags.each do |tag| %>
+          <div class="control" data-tag-id="<%= tag[:id] %>">
+            <div class="tags has-addons">
+              <a class="tag is-info is-medium"><%= tag[:text] %></a>
+              <%= link_to("", tag_path(tag), method: :delete, remote: true, class: "tag is-delete is-info is-medium", data: { confirm: "Are you sure you want to delete the \'#{tag[:text]}\' tag?" }) %>
+            </div>
           </div>
-        </div>
-
-        <div class="control">
-          <div class="tags has-addons">
-            <a class="tag is-info is-medium">Female Lead</a>
-            <a class="tag is-delete is-info is-medium"></a>
-          </div>
-        </div>
-
-        <div class="control">
-          <div class="tags has-addons">
-            <a class="tag is-info is-medium">Magic</a>
-            <a class="tag is-delete is-info is-medium"></a>
-          </div>
-        </div>
+        <% end %>
       </div>
     </div>
+    <%#
     <div class="tab-content comments">
     </div>
+    %>
     <div class="tab-content description">
     <% @book[:description].split("<br /><br />") do |paragraph| %>
       <p class="description-paragraph"><%= paragraph %></p>

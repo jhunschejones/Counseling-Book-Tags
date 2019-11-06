@@ -1,6 +1,8 @@
 require 'httparty'
 
 module Goodreads
+  class BookNotFound < StandardError; end
+
   def self.search_by_title(title, page=1)
     Rails.cache.fetch("title:#{title}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{title}&search[field]=title&page=#{page}", timeout: 12).parsed_response
@@ -11,7 +13,6 @@ module Goodreads
   def self.search_by_author(author, page=1)
     Rails.cache.fetch("author:#{author}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{author}&search[field]=author&page=#{page}", timeout: 12).parsed_response
-      p response
       transform_book_results(response, page)
     end
   end
@@ -26,6 +27,7 @@ module Goodreads
   def self.book_details(book_id)
     Rails.cache.fetch("book_id:#{book_id}") do
       response = HTTParty.get("https://www.goodreads.com/book/show.xml?key=#{ENV["GOODREADS_KEY"]}&id=#{book_id}", timeout: 12).parsed_response
+      raise BookNotFound if response["error"] == "Page not found"
       book = response["GoodreadsResponse"]["book"]
       authors =
         if book["authors"]["author"].kind_of?(Array)
@@ -59,6 +61,18 @@ module Goodreads
         description: format_description(book["description"]),
         language: book["language_code"]
       }
+    end
+  end
+
+  def self.search_from_query_params(params)
+    if params[:title]
+      Goodreads.search_by_title(params[:title], params[:page] || 1)
+    elsif params[:author]
+      Goodreads.search_by_author(params[:author], params[:page] || 1)
+    elsif params[:isbn]
+      Goodreads.search_by_isbn(params[:isbn], params[:page] || 1)
+    else
+      raise "Unrecognized search type"
     end
   end
 
