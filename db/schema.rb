@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 2019_11_07_000356) do
   end
 
   create_table "books", force: :cascade do |t|
-    t.integer "source_id"
+    t.bigint "source_id"
     t.string "source", null: false
     t.string "title", null: false
     t.bigint "isbn", null: false
