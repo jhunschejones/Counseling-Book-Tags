@@ -1,36 +1,30 @@
 class BooksController < ApplicationController
   def index
-    return unless book_search_params.present?
+    return unless book_params.present?
 
-    if book_search_params[:source] == "goodreads"
-      result = Goodreads.search_from_query_params(book_search_params)
-      @books = result[:books]
-      @current_page = result[:current_page]
-      @total_pages = result[:total_pages]
+    if book_params[:source] == "goodreads"
+      external_api_result = Goodreads.search_by_query_params(book_params)
+      @books = external_api_result[:books]
+    elsif book_params[:tags]
+      @books = Book.by_tags(book_params[:tags])
+      @tags = Tag.uniques_from_list_of_books(@books)
     else
-      @books = Book.search_from_query_params(book_search_params)
-      @current_page = 1
-      @total_pages = 1
+      @books = Book.by_query_params(book_params)
     end
+
+    @current_page = external_api_result ? external_api_result[:current_page] : 1
+    @total_pages = external_api_result ? external_api_result[:total_pages] : 1
   end
 
   def show
-    raise "Unrecognized source type" unless book_search_params[:source] == "goodreads"
-    @book = Book.database_or_external(book_search_params[:source], book_params[:id])
-    @tags = @book.new_record? ? [] : Tag.where(book_id: @book.id)
+    raise "Unrecognized source type" unless book_params[:source] == "goodreads"
+    @book = Book.database_or_external(book_params[:source], book_params[:id])
+    @tags = @book[:id] ? @book.tags : []
+    @authors = @book[:authors] ? @book[:authors] : @book.authors
   end
 
   private
     def book_params
-      params.permit(:id)
-    end
-
-    def book_search_params
-      params.permit(:source, :title, :author, :isbn).tap do |params|
-        # Only replacing these values for now while manual URL searches include them
-        params[:source] = params[:source].gsub("\"", "") if params[:source]
-        params[:title] = params[:title].gsub("\"", "") if params[:title]
-        params[:author] = params[:author].gsub("\"", "") if params[:author]
-      end
+      params.permit(:id, :source, :title, :author, :isbn, tags: [])
     end
 end

@@ -12,7 +12,7 @@
         <div class="field">
           <label class="label">Add new tags seperated by commas</label>
           <p class="control has-icons-left">
-            <input class="input" type="text" placeholder="e.g Personal Growth, Communication" name="tag[text]">
+            <input class="input tag-input" type="text" placeholder="e.g Personal Growth, Communication" name="tag[text]">
             <span class="icon is-small is-left">
               <i class="fas fa-tag"></i>
             </span>
@@ -21,7 +21,7 @@
           <%= f.hidden_field "book[source_id]", value: book[:source_id] %>
           <div class="field create-tag-button">
             <div class="control">
-              <%= submit_tag "Create", name: "commit", value: "Create", class: "button is-info" %>
+              <%= f.button "Create", type: :submit, class: "button is-info", data: {target: "tag-modal.submitButton", action: "click->tag-modal#submit"} %>
             </div>
           </div>
         </div>

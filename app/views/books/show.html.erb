@@ -2,8 +2,8 @@
   <div class="column is-two-fifths left-column">
     <%= image_tag(@book[:cover_url], class: "cover", alt: "Book Cover") %>
     <p class="title"><%= @book[:title] %></p>
-    <% @book[:authors].each do |author| %>
-      <h2 class="author"><%= author %></h2>
+    <% @authors.each do |author| %>
+      <h2 class="author"><%= author[:name] %></h2>
     <% end %>
     <p class="published"><%= @book[:publisher] %>&nbsp;&copy;<%= @book[:published_year] %></p>
   </div>
@@ -48,8 +48,12 @@
         <% @tags.each do |tag| %>
           <div class="control" data-tag-id="<%= tag[:id] %>">
             <div class="tags has-addons">
-              <a class="tag is-info is-medium"><%= tag[:text] %></a>
-              <%= link_to("", tag_path(tag), method: :delete, remote: true, class: "tag is-delete is-info is-medium", data: { confirm: "Are you sure you want to delete the \'#{tag[:text]}\' tag?" }) %>
+              <% if tag[:user_id] == @user.id %>
+                <a class="tag is-primary is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>
+                <%= link_to("", tag_path(tag), method: :delete, remote: true, class: "tag is-delete is-primary is-medium", data: { confirm: "Are you sure you want to delete the \'#{tag[:text]}\' tag?" }) %>
+              <% else %>
+                <a class="tag is-info is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>
+              <% end %>
             </div>
           </div>
         <% end %>

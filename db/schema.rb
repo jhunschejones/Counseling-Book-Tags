@@ -10,28 +10,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_04_033657) do
+ActiveRecord::Schema.define(version: 2019_11_07_000356) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "authors", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "source", null: false
+    t.bigint "source_id"
+    t.string "image"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_authors_on_name"
+    t.index ["source", "source_id"], name: "index_authors_on_source_and_source_id", unique: true
+  end
+
+  create_table "authors_books", id: false, force: :cascade do |t|
+    t.bigint "book_id", null: false
+    t.bigint "author_id", null: false
+    t.index ["author_id"], name: "index_authors_books_on_author_id"
+    t.index ["book_id"], name: "index_authors_books_on_book_id"
+  end
 
   create_table "books", force: :cascade do |t|
     t.integer "source_id"
     t.string "source", null: false
     t.string "title", null: false
-    t.string "authors", null: false, array: true
-    t.integer "isbn", null: false
-    t.integer "isbn13", null: false
-    t.integer "published_year", null: false
+    t.bigint "isbn", null: false
+    t.bigint "isbn13", null: false
+    t.bigint "published_year", null: false
     t.string "publisher"
     t.string "cover_url"
     t.text "description"
     t.string "language"
+    t.text "searchable_tags", default: [], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["isbn"], name: "index_books_on_isbn", unique: true
     t.index ["source", "source_id"], name: "index_books_on_source_and_source_id", unique: true
-    t.index ["title", "authors"], name: "index_books_on_title_and_authors", unique: true
+    t.index ["title"], name: "index_books_on_title"
   end
 
   create_table "tags", force: :cascade do |t|

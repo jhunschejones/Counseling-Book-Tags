@@ -1,2 +1,10 @@
-<h1>Tags#index</h1>
-<p>Find me in app/views/tags/index.html.erb</p>
+<div class="all-tags">
+  <h2>All User Tags</h2>
+  <% @tags.each do |tag| %>
+    <% if tag[:user_id] == @user.id %>
+      <a class="tag is-primary is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>
+    <% else %>
+      <a class="tag is-info is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>
+    <% end %>
+  <% end %>
+</div>

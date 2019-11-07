@@ -3,8 +3,19 @@
     <% if @books.length == 0 %>
       <p>No books match that search!</p>
     <% end %>
+    <div class="all-tags">
+      <% if @tags %>
+        <% @tags.each do |tag| %>
+          <% if params[:tags].include?(tag.text) %>
+            <a class="tag is-primary is-medium" href="<%= toggle_searched_tags(tag.text, params) %>"><%= tag.text %></a>
+          <% else %>
+            <a class="tag is-info is-medium" href="<%= toggle_searched_tags(tag.text, params) %>"><%= tag.text %></a>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
     <div class="book-results">
-      <% @books.each do |book|%>
+      <% @books.each do |book| %>
         <a class="book-card" href="/books/<%= "#{book[:source_id]}?source=#{book[:source]}" %>">
           <%= image_tag(book[:cover_url], class: "cover", alt: "Book Cover") %>
           <div class="book-card-footer">

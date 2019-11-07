@@ -35,6 +35,12 @@
       }
     }
   }
+  .all-tags {
+    margin: 20px 20px 0px 20px;
+    .tag {
+      margin: 5px 3px;
+    }
+  }
   .book-results {
     margin: 12px;
     display: flex;
@@ -126,9 +132,9 @@
       .tag.is-delete {
         &:hover {
           // manually adjusted lighter version of `$primary`
-          // background-color: hsl(171, 51%, 65%);
-          // manually adjusted lighter version of `$info` // hsl(204, 71%, 53%);
-          background-color: hsl(204, 60%, 64%);
+          background-color: hsl(171, 51%, 65%);
+          // manually adjusted lighter version of `$info`
+          // background-color: hsl(204, 60%, 64%);
         }
       }
     }

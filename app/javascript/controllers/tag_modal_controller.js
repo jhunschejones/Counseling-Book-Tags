@@ -1,10 +1,10 @@
 import { Controller } from "stimulus"
 
 export default class extends Controller {
-  static targets = [ "modal" ]
+  static targets = [ "modal", "submitButton" ]
 
   initialize() {
-    document.querySelector(".tag-modal").addEventListener("ajax:success", this.createTagInDOM.bind(this));
+    document.querySelector(".tag-modal").addEventListener("ajax:success", this.handlePostResponse.bind(this));
   }
 
   open() {
@@ -25,7 +25,11 @@ export default class extends Controller {
     }
   }
 
-  createTagInDOM(e) {
+  submit() {
+    this.submitButtonTarget.classList.add("is-loading");
+  }
+
+  handlePostResponse(e) {
     const data = e.detail[0];
     const status = e.detail[1];
     const xhr = e.detail[2];
@@ -34,13 +38,15 @@ export default class extends Controller {
         document.querySelector(".tags-container").appendChild(this.stringToNode(
           `<div class="control" data-tag-id="${newTag["id"]}">
             <div class="tags has-addons">
-              <a class="tag is-info is-medium">${newTag["attributes"]["text"]}</a>
-              <a class="tag is-delete is-info is-medium" data-remote="true" rel="nofollow" data-method="delete" href="/tags/${newTag["id"]}" data-confirm="Are you sure you want to delete the '${newTag["attributes"]["text"]}' tag?"></a>
+              <a class="tag is-primary is-medium" href="/books?tags[]=${newTag["attributes"]["text"]}">${newTag["attributes"]["text"]}</a>
+              <a class="tag is-delete is-primary is-medium" data-remote="true" rel="nofollow" data-method="delete" href="/tags/${newTag["id"]}" data-confirm="Are you sure you want to delete the '${newTag["attributes"]["text"]}' tag?"></a>
             </div>
           </div>`
         ));
       });
     }
+    this.submitButtonTarget.classList.remove("is-loading");
+    document.querySelector(".tag-input").value = "";
     this.close();
   }
 

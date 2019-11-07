@@ -32,7 +32,7 @@
       <div class="navbar-menu" data-target="menu.navbarMenu">
         <div class="navbar-start">
           <div class="navbar-divider"></div>
-          <a class="navbar-item is-expanded nav-link">
+          <a class="navbar-item is-expanded nav-link" href="/tags">
             <span class="icon has-text-danger">
               <%= fa_icon("tags", class: "fas") %>
             </span>
@@ -43,6 +43,12 @@
               <%= fa_icon("search", class: "fas") %>
             </span>
             <span>&nbsp;&nbsp;Search</span>
+          </a>
+          <a class="navbar-item nav-link" href="/users/<%= @user.id %>%">
+            <span class="icon has-text-primary">
+              <%= fa_icon("user", class: "fas") %>
+            </span>
+            <span>&nbsp;&nbsp;My Profile</span>
           </a>
         </div>
 

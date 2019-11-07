@@ -1,3 +1,11 @@
-// Place all the styles related to the Tags controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+.all-tags {
+  margin: 20px;
+  h2 {
+    font-size: 22px;
+    margin-bottom: 12px;
+    margin-left: 3px;
+  }
+  .tag {
+    margin: 5px 3px;
+  }
+}

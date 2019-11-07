@@ -6,21 +6,22 @@ module Goodreads
   def self.search_by_title(title, page=1)
     Rails.cache.fetch("title:#{title}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{title}&search[field]=title&page=#{page}", timeout: 12).parsed_response
-      transform_book_results(response, page)
+      format_book_results(response, page)
     end
   end
 
   def self.search_by_author(author, page=1)
     Rails.cache.fetch("author:#{author}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{author}&search[field]=author&page=#{page}", timeout: 12).parsed_response
-      transform_book_results(response, page)
+      format_book_results(response, page)
     end
   end
 
+  # Goodreads API appears to only work with ISBN13?
   def self.search_by_isbn(isbn, page=1)
     Rails.cache.fetch("isbn:#{isbn}:page:#{page}") do
-      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
-      transform_book_results(response, page)
+      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn.to_i}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
+      format_book_results(response, page)
     end
   end
 
@@ -31,14 +32,10 @@ module Goodreads
       book = response["GoodreadsResponse"]["book"]
       authors =
         if book["authors"]["author"].kind_of?(Array)
-          book["authors"]["author"].map do |author|
-            author["name"] if !author["role"] # only return authors, not other roles like illustrator
-          end.compact
+          book["authors"]["author"].map { |author| format_author(author) }.compact
         else
-          # `authors` is stored as an array
-          [
-            book["authors"]["author"]["name"]
-          ]
+          # `authors` is returned as an array
+          [format_author(book["authors"]["author"])]
         end
       {
         source_id: book["id"].to_i,
@@ -64,7 +61,7 @@ module Goodreads
     end
   end
 
-  def self.search_from_query_params(params)
+  def self.search_by_query_params(params)
     if params[:title]
       Goodreads.search_by_title(params[:title], params[:page] || 1)
     elsif params[:author]
@@ -73,6 +70,23 @@ module Goodreads
       Goodreads.search_by_isbn(params[:isbn], params[:page] || 1)
     else
       raise "Unrecognized search type"
+    end
+  end
+
+  def self.format_author(author)
+    if !author["role"] # only return authors, not other roles like illustrator
+      image =
+        if author["image_url"]["nophoto"] == "false"
+          author["image_url"]["__content__"].gsub("\n", "")
+        else
+          nil
+        end
+      {
+        source: "goodreads",
+        source_id: author["id"].to_i,
+        name: author["name"],
+        image: image
+      }
     end
   end
 
@@ -85,7 +99,7 @@ module Goodreads
       .gsub(/--\w*.com$/, "") # remove source citation
   end
 
-  def self.transform_book_results(results, current_page)
+  def self.format_book_results(results, current_page)
     if results["GoodreadsResponse"]["search"]["total_results"].to_i == 0
       {
         total_results: 0,
@@ -96,33 +110,39 @@ module Goodreads
         books: []
       }
     else
+      book_results = results["GoodreadsResponse"]["search"]["results"]["work"]
+      books = book_results.kind_of?(Array) ?
+              book_results.map { |book_result| format_book(book_result) }.compact :
+              [format_book(book_results)] # books should always return array
       {
         total_results: results["GoodreadsResponse"]["search"]["total_results"].to_i,
         current_page: current_page.to_i,
         page_start: results["GoodreadsResponse"]["search"]["results_start"].to_i,
         page_end: results["GoodreadsResponse"]["search"]["results_end"].to_i,
         total_pages: (results["GoodreadsResponse"]["search"]["total_results"].to_f / 19).floor,
-        books: results["GoodreadsResponse"]["search"]["results"]["work"].map do |book_result|
-          # do not return books without a photo
-          book_result["best_book"]["image_url"].include?("nophoto") ? nil :
-            {
-              source_id: book_result["best_book"]["id"].to_i,
-              source: "goodreads",
-              title: book_result["best_book"]["title"],
-              author: book_result["best_book"]["author"]["name"],
-              published_year: book_result["original_publication_year"].to_i,
-              #
-              # "image_url" field ends like `3._SX98_.jpg`. This string can be adjusted to
-              # return different size images. Values and their meanings are as follows:
-              #
-              # - `SX` is size on the x-axis
-              # - `SY` is size on the y-axis
-              # - `98` is the size in pixels
-              #
-              cover_url: book_result["best_book"]["image_url"].gsub(/_\w{2}\d{1,3}_/, "_SX200_")
-            }
-        end.compact
+        books: books
       }
     end
+  end
+
+  def self.format_book(book_result)
+    # do not return books without a photo
+    return nil if book_result["best_book"]["image_url"].include?("nophoto")
+    {
+      source_id: book_result["best_book"]["id"].to_i,
+      source: "goodreads",
+      title: book_result["best_book"]["title"],
+      author: book_result["best_book"]["author"]["name"],
+      published_year: book_result["original_publication_year"].to_i,
+      #
+      # "image_url" field ends like `3._SX98_.jpg`. This string can be adjusted to
+      # return different size images. Values and their meanings are as follows:
+      #
+      # - `SX` is size on the x-axis
+      # - `SY` is size on the y-axis
+      # - `98` is the size in pixels
+      #
+      cover_url: book_result["best_book"]["image_url"].gsub(/_\w{2}\d{1,3}_/, "_SX200_")
+    }
   end
 end
