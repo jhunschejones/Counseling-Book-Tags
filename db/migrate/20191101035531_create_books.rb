@@ -1,7 +1,7 @@
 class CreateBooks < ActiveRecord::Migration[6.0]
   def change
     create_table :books do |t|
-      t.integer :source_id
+      t.integer :source_id, limit: 8 # 8 bytes for bigint
       t.string :source, null: false
       t.string :title, null: false
       t.integer :isbn, null: false, limit: 8 # 8 bytes for bigint
