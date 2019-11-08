@@ -1,0 +1,29 @@
+  <div class="all-tags">
+    <div class="searched-tags">
+      <article class="message is-info">
+        <div class="message-body">
+          <p class="tag-message-label">
+            <strong>Searched tags</strong>
+            <% if searched_tags.length > 1 %>
+              <em>(click to remove from search)</em>
+            <% end %>
+          </p>
+          <% searched_tags.each do |tag| %>
+            <a class="tag is-info is-medium" href="<%= toggle_searched_tags(tag.text, params) %>"><%= tag.text %></a>
+          <% end %>
+        </div>
+      </article>
+    </div>
+    <% if other_tags.length > 0 %>
+      <div class="other-tags">
+        <article class="message">
+          <div class="message-body">
+            <p class="tag-message-label"><strong>Other matching tags</strong><em>(click to add to search)</em></p>
+            <% other_tags.each do |tag| %>
+              <a class="tag is-info is-medium" href="<%= toggle_searched_tags(tag.text, params) %>"><%= tag.text %></a>
+            <% end %>
+          </div>
+        </article>
+      </div>
+    <% end %>
+  </div>

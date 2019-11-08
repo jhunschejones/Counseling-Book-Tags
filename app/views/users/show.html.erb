@@ -3,10 +3,15 @@
     <div class="notification is-warning"><%= flash[:notice] %></div>
   <% end %>
 
-  <h2>User Details</h2>
+  <h2 class="user-details-title">
+    <span class="icon is-small is-left has-text-primary">
+      <i class="fas fa-user"></i>
+    </span>
+    <span>User Details</span>
+  </h2>
   <p class="name">
     <span class="icon is-small is-left">
-      <i class="fas fa-user"></i>
+      <i class="fas fa-hand-peace"></i>
     </span>
     <span class="label">Name: </span><%= @user.name %>
   </p>
@@ -17,8 +22,11 @@
     <span class="label">Email: </span><%= @user.email %>
   </p>
   <p class="created-at">
-    <span class="label">Created at: </span>
-    <%= @user.created_at.localtime %>
+    <span class="icon is-small is-left">
+      <i class="fas fa-calendar-check"></i>
+    </span>
+    <span class="label">Member since: </span>
+    <%= @user.created_at.localtime.to_formatted_s(:long_ordinal) %>
   </p>
 
   <%= link_to "Update", edit_user_path, class: "edit-button button is-warning" %>

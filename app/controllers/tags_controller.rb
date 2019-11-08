@@ -2,7 +2,7 @@ class TagsController < ApplicationController
   skip_before_action :authenticate_user, only: [:destroy]
 
   def index
-    @tags = Tag.all.uniq { |tag| tag.text }
+    @tags = Tag.order(:text).uniq { |tag| tag.text }
   end
 
   def create

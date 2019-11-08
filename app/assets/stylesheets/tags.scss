@@ -1,9 +1,15 @@
 .all-tags {
-  margin: 20px;
-  h2 {
+  margin: 18px 12px;
+  h2.tags-title {
     font-size: 22px;
-    margin-bottom: 12px;
-    margin-left: 3px;
+    padding-top: 5px;
+    margin-left: 9px;
+    margin-bottom: 14px;
+    font-weight: 400;
+    .icon {
+      margin-right: 8px;
+      opacity: 0.95;
+    }
   }
   .tag {
     margin: 5px 3px;

@@ -43,11 +43,11 @@ class Book < ApplicationRecord
 
   def self.by_query_params(params)
     if params[:title]
-      Book.where("lower(title) LIKE :query", query: "%#{params[:title].downcase}%")
+      Book.eager_load(:authors).where("lower(title) LIKE :query", query: "%#{params[:title].downcase}%")
     elsif params[:author]
-      Book.includes(:authors).where("lower(authors.name) LIKE :query", query: "%#{params[:author].downcase}%").references(:authors)
+      Book.eager_load(:authors).where("lower(authors.name) LIKE :query", query: "%#{params[:author].downcase}%").references(:authors)
     elsif params[:isbn]
-      Book.where(isbn: params[:isbn].to_i)
+      Book.where(isbn: params[:isbn].to_i).or(where(isbn13: params[:isbn].to_i)).eager_load(:authors)
     else
       raise "Unrecognized search type"
     end

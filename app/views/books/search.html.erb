@@ -1,0 +1,7 @@
+<div class="book-search">
+  <% if flash[:notice] %>
+    <div class="notification is-warning"><%= flash[:notice] %></div>
+  <% end %>
+
+  <%= render partial: "search_panel" %>
+</div>

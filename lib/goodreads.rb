@@ -132,7 +132,7 @@ module Goodreads
       source_id: book_result["best_book"]["id"].to_i,
       source: "goodreads",
       title: book_result["best_book"]["title"],
-      author: book_result["best_book"]["author"]["name"],
+      authors: [book_result["best_book"]["author"]["name"]],
       published_year: book_result["original_publication_year"].to_i,
       #
       # "image_url" field ends like `3._SX98_.jpg`. This string can be adjusted to

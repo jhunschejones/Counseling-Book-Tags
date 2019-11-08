@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'books#index'
+  root 'tags#index'
 
   controller :sessions do
     get 'login' => :new
@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :users, only: [:new, :show, :edit, :update]
   post 'users/new', to: 'users#create' # POST and GET from the same route to render form errors easliy
 
+  get 'books/search', to: 'books#search'
   resources :books, only: [:index, :show]
   resources :tags, only: [:index, :create, :destroy]
 end

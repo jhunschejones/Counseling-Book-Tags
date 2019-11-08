@@ -16,6 +16,7 @@ class SessionsController < ApplicationController
       redirect_to login_url, notice: "Please follow the email verification link to activate your account, or preform a password reset to generate a new link"
     elsif user.try(:authenticate, params[:password])
       session[:user_id] = user.id
+      flash.discard
       redirect_to session.delete(:return_to) || user_path(user)
     else
       redirect_to login_url, alert: "Invalid email/password combination"

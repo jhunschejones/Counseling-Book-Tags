@@ -1,5 +1,10 @@
 <div class="all-tags">
-  <h2>All User Tags</h2>
+  <h2 class="tags-title">
+    <span class="icon is-small is-left has-text-danger">
+      <i class="fas fa-tags"></i>
+    </span>
+    <span>All User Tags</span>
+  </h2>
   <% @tags.each do |tag| %>
     <% if tag[:user_id] == @user.id %>
       <a class="tag is-primary is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>

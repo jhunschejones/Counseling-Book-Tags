@@ -3,42 +3,24 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .books {
-  .search-container {
-    .search-spacer {
-      margin-top: 100px;
-    }
-    margin: 0px 12px;
-    @media screen and (min-width: 680px) {
-      margin: 0px 60px;
-    }
-  }
-  .search-panel-container {
-    margin-top: 60px;
-    display: flex;
-    justify-content: center;
-    .panel {
-      min-width: 300px;
-      max-width: 600px;
-      flex-shrink: 1;
-      flex-grow: 1;
-      .panel-tabs {
-        a {
-          font-size: 16px;
-        }
-      }
-      .radio-header {
-        // bulma `$grey-light`
-        color: hsl(0, 0%, 71%);
-      }
-      .radio-option {
-        margin-left: 6px;
-      }
-    }
-  }
   .all-tags {
     margin: 20px 20px 0px 20px;
     .tag {
       margin: 5px 3px;
+    }
+    // overriding bulma message padding
+    .message-body {
+      padding: 8px 10px 8px 20px;
+    }
+    .tag-message-label {
+      margin-bottom: 6px;
+      strong {
+        padding-right: 6px;
+      }
+      em {
+        font-weight: 100;
+        opacity: 0.55;
+      }
     }
   }
   .book-results {
@@ -164,6 +146,42 @@
       }
       .create-tag-button {
         margin-top: 12px;
+      }
+    }
+  }
+}
+
+.book-search {
+  .search-container {
+    .search-spacer {
+      margin-top: 100px;
+    }
+    margin: 0px 12px;
+    @media screen and (min-width: 680px) {
+      margin: 0px 60px;
+    }
+  }
+  .search-panel-container {
+    margin: 60px 12px 0px 12px;
+    display: flex;
+    justify-content: center;
+    .panel {
+      min-width: 300px;
+      max-width: 600px;
+      flex-shrink: 1;
+      flex-grow: 1;
+      padding-bottom: 3px;
+      .panel-tabs {
+        a {
+          font-size: 16px;
+        }
+      }
+      .radio-header {
+        // bulma `$grey-light`
+        color: hsl(0, 0%, 71%);
+      }
+      .radio-option {
+        margin-left: 6px;
       }
     }
   }
