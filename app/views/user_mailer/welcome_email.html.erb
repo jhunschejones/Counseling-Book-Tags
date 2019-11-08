@@ -1,3 +1,5 @@
 <h1>Welcome to Counseling Book Tags, <%= @user.name %></h1>
-<p>You have successfully signed up for counselingbooktags.com</p>
-<p>To verify your account, please follow <a href="<%= email_verify_url(token: @user.email_verification_token) %>">this link</a>.
+<p>You now have an account on counselingbooktags.com registered under this email address.</p>
+<p>To verify your email and access your account, please follow <a href="<%= email_verify_url(token: @user.email_verification_token) %>">this link</a>.
+
+<%= email_verify_url(token: @user.email_verification_token) %>
