@@ -43,3 +43,5 @@ staging:
 
 production:
   <<: *default_settings
+  ​browser_monitoring:
+    ​auto_instrument: true
