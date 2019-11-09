@@ -12,9 +12,11 @@ class BooksController < ApplicationController
       @other_tags = all_tags.select { |tag| !book_params[:tags].include?(tag.text) }.sort
     elsif book_params.present?
       @books = Book.by_query_params(book_params)
+    else
+      @books = Book.order(:title)
     end
 
-    if !book_params.present? || @books.length == 0 || (!@books[0] && @books.length == 1)
+    if @books.length == 0 || (!@books[0] && @books.length == 1)
       redirect_to books_search_path, notice: "No books matched that search"
     end
   end
