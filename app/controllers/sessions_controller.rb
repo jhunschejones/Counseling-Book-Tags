@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
 
   def new
     if session[:user_id]
-      redirect_to session.delete(:return_to) || user_path(session[:user_id]), notice: "You are already logged in"
+      redirect_to session.delete(:return_to) || user_path(session[:user_id])
     else
       render :new
     end
