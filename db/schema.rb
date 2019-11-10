@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_10_203758) do
+ActiveRecord::Schema.define(version: 2019_11_07_000356) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,9 +43,9 @@ ActiveRecord::Schema.define(version: 2019_11_10_203758) do
     t.text "description"
     t.string "language"
     t.string "searchable_tags", default: [], array: true
+    t.string "isbns", default: [], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "isbns", default: [], array: true
     t.index ["source", "source_id"], name: "index_books_on_source_and_source_id", unique: true
     t.index ["title"], name: "index_books_on_title"
   end

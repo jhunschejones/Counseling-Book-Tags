@@ -3,7 +3,7 @@ class CreateAuthors < ActiveRecord::Migration[6.0]
     create_table :authors do |t|
       t.string :name, null: false
       t.string :source, null: false
-      t.integer :source_id, limit: 8 # 8 bytes for bigint
+      t.string :source_id
       t.string :image
 
       t.timestamps
