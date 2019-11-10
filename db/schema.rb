@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_10_201838) do
+ActiveRecord::Schema.define(version: 2019_11_10_203758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,8 +37,6 @@ ActiveRecord::Schema.define(version: 2019_11_10_201838) do
     t.string "source_id"
     t.string "source", null: false
     t.string "title", null: false
-    t.bigint "isbn"
-    t.bigint "isbn13"
     t.string "published_year"
     t.string "publisher"
     t.string "cover_url"
