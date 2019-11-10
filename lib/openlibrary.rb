@@ -48,7 +48,7 @@ module Openlibrary
         author_id = author["author"]["key"].gsub("/authors/", "")
         HTTParty.get("http://openlibrary.org/authors/#{author_id}.json", { timeout: 12, format: :json }).parsed_response
       end
-      book_search = author_responses.length > 0 ? HTTParty.get("http://openlibrary.org/search.json?title=#{Base64.encode64(book_response["title"])}&author=#{Base64.encode64(author_responses[0]["name"])}&limit=1", { timeout: 12, format: :json }).parsed_response["docs"][0] : nil
+      book_search = author_responses.length > 0 ? HTTParty.get("http://openlibrary.org/search.json?title=#{URI.escape(book_response["title"])}&author=#{URI.escape(author_responses[0]["name"])}&limit=1", { timeout: 12, format: :json }).parsed_response["docs"][0] : nil
       {
         source_id: book_id,
         source: OPENLIBRARY,

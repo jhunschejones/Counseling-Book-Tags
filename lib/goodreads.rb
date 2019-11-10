@@ -20,8 +20,8 @@ module Goodreads
 
   # Goodreads API appears to only work with ISBN13?
   def self.search_by_isbn(isbn, page=1)
-    Rails.cache.fetch("isbn:#{isbn}:page:#{page}") do
-      response = HTTParty.get("source:goodreads:https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn.to_i}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
+    Rails.cache.fetch("source:goodreads:isbn:#{isbn}:page:#{page}") do
+      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
       format_book_results(response, page)
     end
   end
@@ -40,13 +40,13 @@ module Goodreads
         end
 
       {
-        source_id: book["id"].to_i,
+        source_id: book["id"],
         source: "goodreads",
         title: book["title"],
         authors: authors,
         # isbn: book["isbn"].to_i,
         # isbn13: book["isbn13"].to_i,
-        isbns: [book["isbn"].to_i, book["isbn13"].to_i],
+        isbns: [book["isbn"], book["isbn13"]],
         published_year: book["publication_year"],
         publisher: book["publisher"],
         #
@@ -86,7 +86,7 @@ module Goodreads
         end
       {
         source: "goodreads",
-        source_id: author["id"].to_i,
+        source_id: author["id"],
         name: author["name"],
         image: image
       }
@@ -132,11 +132,11 @@ module Goodreads
     # do not return books without a photo
     return nil if book_result["best_book"]["image_url"].include?("nophoto")
     {
-      source_id: book_result["best_book"]["id"].to_i,
+      source_id: book_result["best_book"]["id"],
       source: "goodreads",
       title: book_result["best_book"]["title"],
       authors: [book_result["best_book"]["author"]["name"]],
-      published_year: book_result["original_publication_year"].to_i,
+      published_year: book_result["original_publication_year"],
       #
       # "image_url" field ends like `3._SX98_.jpg`. This string can be adjusted to
       # return different size images. Values and their meanings are as follows:
