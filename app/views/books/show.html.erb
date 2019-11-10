@@ -5,7 +5,9 @@
     <% @authors.each do |author| %>
       <h2 class="author"><%= author[:name] %></h2>
     <% end %>
-    <p class="published"><%= @book[:publisher] %>&nbsp;&copy;<%= @book[:published_year] %></p>
+    <% if @book[:published_year] %>
+      <p class="published">First published in <%= @book[:published_year] %></p>
+    <% end %>
   </div>
   <div class="column" data-controller="book">
     <div class="tabs is-centered is-boxed">

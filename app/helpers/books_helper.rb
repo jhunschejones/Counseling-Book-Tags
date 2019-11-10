@@ -1,6 +1,6 @@
 module BooksHelper
   def search_results_page(page)
-    books_path(request.params.slice("title", "author", "isbn", "page").merge(page: page))
+    books_path(request.params.slice("title", "author", "isbn", "page", "source").merge(page: page))
   end
 
   # Allow toggling searched params, preventing the user from searching

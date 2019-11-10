@@ -1,7 +1,7 @@
 import { Controller } from "stimulus"
 
 export default class extends Controller {
-  static targets = [ "search", "database", "goodreads" ]
+  static targets = [ "search", "database", "goodreads", "openlibrary" ]
 
   initialize() {
     // Hide flash on page back
@@ -33,9 +33,11 @@ export default class extends Controller {
       this.searchTarget.parentNode.classList.add("is-loading");
       const searchType = document.querySelector('.panel-tabs .tab.is-active').dataset['value'];
       if (this.databaseTarget.checked) {
-        return window.location = `/books?${searchType}=${searchValue}`
+        return window.location = `/books?${searchType}=${searchValue}`;
       } else if (this.goodreadsTarget.checked) {
-        return window.location = `/books?${searchType}=${searchValue}&source=goodreads`
+        return window.location = `/books?${searchType}=${searchValue}&source=goodreads`;
+      } else if (this.openlibraryTarget.checked) {
+        return window.location = `/books?${searchType}=${searchValue}&source=openlibrary`;
       }
     }
   }

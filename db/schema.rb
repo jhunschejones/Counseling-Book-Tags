@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_07_000356) do
+ActiveRecord::Schema.define(version: 2019_11_10_054534) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2019_11_07_000356) do
   create_table "authors", force: :cascade do |t|
     t.string "name", null: false
     t.string "source", null: false
-    t.bigint "source_id"
+    t.string "source_id"
     t.string "image"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -34,12 +34,12 @@ ActiveRecord::Schema.define(version: 2019_11_07_000356) do
   end
 
   create_table "books", force: :cascade do |t|
-    t.bigint "source_id"
+    t.string "source_id"
     t.string "source", null: false
     t.string "title", null: false
-    t.bigint "isbn", null: false
-    t.bigint "isbn13", null: false
-    t.bigint "published_year", null: false
+    t.bigint "isbn"
+    t.bigint "isbn13"
+    t.bigint "published_year"
     t.string "publisher"
     t.string "cover_url"
     t.text "description"
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2019_11_07_000356) do
     t.text "searchable_tags", default: [], array: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["isbn"], name: "index_books_on_isbn", unique: true
+    t.bigint "isbns", default: [], array: true
     t.index ["source", "source_id"], name: "index_books_on_source_and_source_id", unique: true
     t.index ["title"], name: "index_books_on_title"
   end

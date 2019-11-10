@@ -2,16 +2,17 @@ require 'httparty'
 
 module Goodreads
   class BookNotFound < StandardError; end
+  class UnrecognizedSearchType < StandardError; end
 
   def self.search_by_title(title, page=1)
-    Rails.cache.fetch("title:#{title}:page:#{page}") do
+    Rails.cache.fetch("source:goodreads:title:#{title}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{title}&search[field]=title&page=#{page}", timeout: 12).parsed_response
       format_book_results(response, page)
     end
   end
 
   def self.search_by_author(author, page=1)
-    Rails.cache.fetch("author:#{author}:page:#{page}") do
+    Rails.cache.fetch("source:goodreads:author:#{author}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{author}&search[field]=author&page=#{page}", timeout: 12).parsed_response
       format_book_results(response, page)
     end
@@ -20,13 +21,13 @@ module Goodreads
   # Goodreads API appears to only work with ISBN13?
   def self.search_by_isbn(isbn, page=1)
     Rails.cache.fetch("isbn:#{isbn}:page:#{page}") do
-      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn.to_i}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
+      response = HTTParty.get("source:goodreads:https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn.to_i}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
       format_book_results(response, page)
     end
   end
 
   def self.book_details(book_id)
-    Rails.cache.fetch("book_id:#{book_id}") do
+    Rails.cache.fetch("source:goodreads:book_id:#{book_id}") do
       response = HTTParty.get("https://www.goodreads.com/book/show.xml?key=#{ENV["GOODREADS_KEY"]}&id=#{book_id}", timeout: 12).parsed_response
       raise BookNotFound if response["error"] == "Page not found"
       book = response["GoodreadsResponse"]["book"]
@@ -37,13 +38,15 @@ module Goodreads
           # `authors` is returned as an array
           [format_author(book["authors"]["author"])]
         end
+
       {
         source_id: book["id"].to_i,
         source: "goodreads",
         title: book["title"],
         authors: authors,
-        isbn: book["isbn"].to_i,
-        isbn13: book["isbn13"].to_i,
+        # isbn: book["isbn"].to_i,
+        # isbn13: book["isbn13"].to_i,
+        isbns: [book["isbn"].to_i, book["isbn13"].to_i],
         published_year: book["publication_year"],
         publisher: book["publisher"],
         #
@@ -56,7 +59,7 @@ module Goodreads
         #
         cover_url: book["image_url"].gsub(/_\w{2}\d{1,3}_/, "_SX250_"),
         description: format_description(book["description"]),
-        language: book["language_code"]
+        language: book["language_code"],
       }
     end
   end
@@ -69,7 +72,7 @@ module Goodreads
     elsif params[:isbn]
       Goodreads.search_by_isbn(params[:isbn], params[:page] || 1)
     else
-      raise "Unrecognized search type"
+      raise UnrecognizedSearchType
     end
   end
 

@@ -1,7 +1,13 @@
 class BooksController < ApplicationController
+
   def index
-    if book_params[:source] == "goodreads"
+    if book_params[:source] == Book::GOODREADS
       external_api_result = Goodreads.search_by_query_params(book_params)
+      @books = external_api_result[:books]
+      @current_page = external_api_result[:current_page]
+      @total_pages = external_api_result[:total_pages]
+    elsif book_params[:source] == Book::OPENLIBRARY
+      external_api_result = Openlibrary.search_by_query_params(book_params)
       @books = external_api_result[:books]
       @current_page = external_api_result[:current_page]
       @total_pages = external_api_result[:total_pages]
@@ -22,7 +28,7 @@ class BooksController < ApplicationController
   end
 
   def show
-    raise "Unrecognized source type" unless book_params[:source] == "goodreads"
+    raise "Unrecognized source type" unless Book::SOURCES.include?(book_params[:source])
     @book = Book.database_or_external(book_params[:source], book_params[:id])
     @tags = @book[:id] ? @book.tags.order(:text) : []
     @authors = @book[:authors] ? @book[:authors] : @book.authors
@@ -33,6 +39,6 @@ class BooksController < ApplicationController
 
   private
     def book_params
-      params.permit(:id, :source, :title, :author, :isbn, tags: [])
+      params.permit(:id, :source, :title, :author, :isbn, :page, tags: [])
     end
 end
