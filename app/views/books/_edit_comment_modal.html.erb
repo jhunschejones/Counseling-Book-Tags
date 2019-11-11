@@ -9,20 +9,22 @@
     </header>
     <section class="modal-card-body">
       <div class="field">
-        <label class="label">
-          <span class="icon is-small is-left">
-            <i class="fas fa-comment"></i>
-          </span>
-          Edit your comment
-        </label>
-        <p class="control has-icons-left">
-          <textarea class="textarea edit-comment-input" rows="8" placeholder="e.g I found this book particularly helpful for..." name="comment[body]" data-action="keyup->comment-modal#updatePutBody"></textarea>
-        </p>
-        <div class="field edit-comment-button">
-          <div class="control">
-            <%= link_to "Update", comment_path(0, comment: { body: "", book_id: params[:id] }), method: :put, remote: true, class: "button is-info", data: { target: "comment-modal.updateButton", action: "click->comment-modal#update" } %>
+        <%= form_tag(comment_path(0), method: :put, remote: true, class: "edit-tag-form") do |f| %>
+          <label class="label">
+            <span class="icon is-small is-left">
+              <i class="fas fa-comment"></i>
+            </span>
+            Edit your comment
+          </label>
+          <p class="control has-icons-left">
+            <textarea class="textarea edit-comment-input" rows="8" placeholder="e.g I found this book particularly helpful for..." name="comment[body]"></textarea>
+          </p>
+          <div class="field edit-comment-button">
+            <div class="control">
+              <%= button_tag "Update", type: :submit, class: "button is-info", data: { target: "comment-modal.updateButton", action: "click->comment-modal#update" } %>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
     </section>
     <footer class="modal-card-foot">

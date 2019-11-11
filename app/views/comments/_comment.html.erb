@@ -6,11 +6,12 @@
           <strong><%= comment.user.name %></strong>&nbsp;-&nbsp;
           <small><%= comment.created_at.localtime.to_formatted_s(:long_ordinal) %></small>
           <br />
-          "<span class="comment-body"><%= comment.body %></span>"
+          "<span class="comment-body"><%= comment.html_safe_body.html_safe %></span>"
         </p>
       </div>
       <% if comment.user.id == user.id %>
-        <nav class="level">
+        <%# `is-mobile` tells bulma to keep these horizontal on mobile as well as desktop %>
+        <nav class="level is-mobile">
           <div class="level-left"></div>
           <div class="level-right">
             <a class="level-item edit-comment-button" data-comment-id="<%= comment.id %>" data-action="click->comment-modal#openEdit">

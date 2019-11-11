@@ -1,13 +1,13 @@
 class CommentsController < ApplicationController
   def create
     book = Book.find_or_create(book_params["source"], book_params["source_id"])
-    comment = Comment.create(body: comment_params["body"].strip, book_id: book.id, user_id: @user.id)
-    render json: comment.successfully_created_response
+    comment = Comment.create(body: comment_params["body"], book_id: book.id, user_id: @user.id)
+    render json: comment.success_response
   end
 
   def update
     comment = Comment.find(params["id"].to_i)
-    head comment.update(body: comment_params[:body]) ? :ok : :internal_server_error
+    render json: comment.update(body: comment_params[:body]) ? comment.success_response : :internal_server_error
   end
 
   def destroy

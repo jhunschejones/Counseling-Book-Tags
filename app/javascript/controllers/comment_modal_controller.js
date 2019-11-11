@@ -29,14 +29,8 @@ export default class extends Controller {
     const commentBody = document.querySelector(`div[data-comment-id="${commentId}"] .comment-body`).innerText;
     document.querySelector(".edit-comment-input").value = commentBody;
 
-    // set correct comment id in link href
-    const postLink = decodeURI(document.querySelector(".edit-comment-button .button").href);
-    document.querySelector(".edit-comment-button .button").href = postLink.replace(/\/comments\/\d*\?/, `/comments/${commentId}?`);
-  }
-
-  updatePutBody() {
-    const newBodyContent = `[body]=${document.querySelector(".edit-comment-input").value}&`;
-    document.querySelector(".edit-comment-button .button").href = decodeURI(document.querySelector(".edit-comment-button .button").href).replace(/\[body\]=.*&/, encodeURI(newBodyContent));
+    // set correct comment id in form action path
+    document.querySelector(".edit-tag-form").action = document.querySelector(".edit-tag-form").action.replace(/\/comments\/\d*$/, `/comments/${commentId}`);
   }
 
   closeEdit() {
@@ -107,9 +101,7 @@ export default class extends Controller {
     const status = e.detail[1];
     const xhr = e.detail[2];
     if (status === "OK") {
-      const commentId = decodeURI(xhr.responseURL).match(/^.*\/comments\/(\d*)?.*$/)[1];
-      const newCommentBody = decodeURI(xhr.responseURL).match(/^.*\[body\]=(.*)&comment.*$/)[1];
-      document.querySelector(`div[data-comment-id="${commentId}"] .comment-body`).innerText = newCommentBody;
+      document.querySelector(`div[data-comment-id="${data["data"]["id"]}"] .comment-body`).innerText = data["data"]["attributes"]["body"].replace(/<br \/><br \/>/g, "\n\n");
     }
     this.updateButtonTarget.classList.remove("is-loading");
     document.querySelector(".edit-comment-input").value = "";
