@@ -9,21 +9,21 @@ module Openlibrary
 
   def self.search_by_title(title, page=1)
     Rails.cache.fetch("source:openlibrary:title:#{title}") do
-      response = HTTParty.get("http://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
+      response = HTTParty.get("https://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
       format_book_results(response, page)
     end
   end
 
   def self.search_by_author(author, page=1)
     Rails.cache.fetch("source:openlibrary:author:#{author}") do
-      response = HTTParty.get("http://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
+      response = HTTParty.get("https://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
       format_book_results(response, page)
     end
   end
 
   def self.search_by_isbn(isbn, page=1)
     Rails.cache.fetch("source:openlibrary:isbn:#{isbn}") do
-      response = HTTParty.get("http://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
+      response = HTTParty.get("https://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
       format_book_results(response, page)
     end
   end
@@ -42,13 +42,13 @@ module Openlibrary
 
   def self.book_details(book_id)
     Rails.cache.fetch("source:openlibrary:book_id:#{book_id}") do
-      book_response = HTTParty.get("http://openlibrary.org/works/#{book_id}.json", { timeout: 12, format: :json }).parsed_response
+      book_response = HTTParty.get("https://openlibrary.org/works/#{book_id}.json", { timeout: 12, format: :json }).parsed_response
       raise BookNotFound if book_response["error"] == "notfound"
       author_responses = book_response["authors"].select { |a| a["type"]["key"] == AUTHOR_ROLE }.map do |author|
         author_id = author["author"]["key"].gsub("/authors/", "")
-        HTTParty.get("http://openlibrary.org/authors/#{author_id}.json", { timeout: 12, format: :json }).parsed_response
+        HTTParty.get("https://openlibrary.org/authors/#{author_id}.json", { timeout: 12, format: :json }).parsed_response
       end
-      book_search = author_responses.length > 0 ? HTTParty.get("http://openlibrary.org/search.json?title=#{URI.escape(book_response["title"])}&author=#{URI.escape(author_responses[0]["name"])}&limit=1", { timeout: 12, format: :json }).parsed_response["docs"][0] : nil
+      book_search = author_responses.length > 0 ? HTTParty.get("https://openlibrary.org/search.json?title=#{URI.escape(book_response["title"])}&author=#{URI.escape(author_responses[0]["name"])}&limit=1", { timeout: 12, format: :json }).parsed_response["docs"][0] : nil
       {
         source_id: book_id,
         source: OPENLIBRARY,
@@ -57,7 +57,7 @@ module Openlibrary
         isbns: book_search ? book_search["isbn"] : [0],
         published_year: book_search ? (book_search["first_publish_year"] || book_search["publish_date"][0].gsub(/\D/, "")) : nil,
         # publisher: book["publisher"], # too many of these to be practical
-        cover_url: "http://covers.openlibrary.org/b/id/#{book_response["covers"][0]}-L.jpg", # there is an array of several covers to choose from here
+        cover_url: "https://covers.openlibrary.org/b/id/#{book_response["covers"][0]}-L.jpg", # there is an array of several covers to choose from here
         description: book_response["description"] ? format_description(book_response["description"]["value"]) : "",
         # language: book["language_code"], # too many of these to be practical
       }
@@ -96,7 +96,7 @@ module Openlibrary
       source: OPENLIBRARY,
       title: result["title"],
       published_year: result["first_publish_year"],
-      cover_url: "http://covers.openlibrary.org/b/id/#{result["cover_i"]}-L.jpg",
+      cover_url: "https://covers.openlibrary.org/b/id/#{result["cover_i"]}-L.jpg",
       authors: result["author_name"], # array of strings
     }
   end
@@ -113,21 +113,21 @@ module Openlibrary
       name: result["name"],
       source: OPENLIBRARY,
       source_id: result["key"].gsub("/authors/", ""),
-      image: result["photos"] ? "http://covers.openlibrary.org/b/id/#{result["photos"][0]}-L.jpg" : nil, # there is an array of several images to choose from here
+      image: result["photos"] ? "https://covers.openlibrary.org/b/id/#{result["photos"][0]}-L.jpg" : nil, # there is an array of several images to choose from here
     }
   end
 
   # Official API
-  # http://openlibrary.org/query.json?type=/type/work&title=#{title}&limit=20&*=
+  # https://openlibrary.org/query.json?type=/type/work&title=#{title}&limit=20&*=
 
   # Experimental API (limit not required, just added for performance, you can then use `&page=2` to go through results)
-  # http://openlibrary.org/search.json?title=harry%20potter&limit=20
-  # http://openlibrary.org/search.json?title=harry%20potter&limit=20
-  # http://openlibrary.org/search.json?author=rowling&limit=20
-  # returns a `cover_i` field which can be used to get the cover here: `http://covers.openlibrary.org/b/id/8302846-L.jpg`
-  # returns a `key` field which can be used to get book details here: `http://openlibrary.org/works/OL82592W.json` or here: `http://openlibrary.org/query.json?type=/type/work&key=/works/OL82592W&*=`
-  # neither of the details pages give author information, you can get an author id from the `authors` array by type, then get more info here `http://openlibrary.org/authors/OL23919A.json`
+  # https://openlibrary.org/search.json?title=harry%20potter&limit=20
+  # https://openlibrary.org/search.json?title=harry%20potter&limit=20
+  # https://openlibrary.org/search.json?author=rowling&limit=20
+  # returns a `cover_i` field which can be used to get the cover here: `https://covers.openlibrary.org/b/id/8302846-L.jpg`
+  # returns a `key` field which can be used to get book details here: `https://openlibrary.org/works/OL82592W.json` or here: `https://openlibrary.org/query.json?type=/type/work&key=/works/OL82592W&*=`
+  # neither of the details pages give author information, you can get an author id from the `authors` array by type, then get more info here `https://openlibrary.org/authors/OL23919A.json`
 
   # Covers API
-  # http://covers.openlibrary.org/b/isbn/9780385533225-L.jpg
+  # https://covers.openlibrary.org/b/isbn/9780385533225-L.jpg
 end
