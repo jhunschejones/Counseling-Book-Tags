@@ -1,0 +1,31 @@
+<div class="box comment" data-comment-id="<%= comment.id %>">
+  <article class="media">
+    <div class="media-content">
+      <div class="content">
+        <p>
+          <strong><%= comment.user.name %></strong>&nbsp;-&nbsp;
+          <small><%= comment.created_at.localtime.to_formatted_s(:long_ordinal) %></small>
+          <br />
+          "<span class="comment-body"><%= comment.body %></span>"
+        </p>
+      </div>
+      <% if comment.user.id == user.id %>
+        <nav class="level">
+          <div class="level-left"></div>
+          <div class="level-right">
+            <a class="level-item edit-comment-button" data-comment-id="<%= comment.id %>" data-action="click->comment-modal#openEdit">
+              <span class="icon">
+                <i class="fas fa-edit"></i>
+              </span>
+            </a>
+            <%= link_to(comment_path(comment), method: :delete, remote: true, class: "level-item delete-comment-button", data: { confirm: "Are you sure you want to delete your comment?" }) do %>
+              <span class="icon">
+                <i class="fas fa-trash"></i>
+              </span>
+            <% end %>
+          </div>
+        </nav>
+      <% end %>
+    </div>
+  </article>
+</div>

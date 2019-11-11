@@ -32,7 +32,7 @@ class TagsController < ApplicationController
       ActiveRecord::Base.connection.close
     end
 
-    # JSON API deleted response
+    # JSON API content deleted response
     head tag.destroy ? :no_content : :internal_server_error
   end
 

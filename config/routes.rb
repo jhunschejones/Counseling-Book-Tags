@@ -18,4 +18,5 @@ Rails.application.routes.draw do
   get 'books/search', to: 'books#search'
   resources :books, only: [:index, :show]
   resources :tags, only: [:index, :create, :destroy]
+  resources :comments, only: [:create, :update, :destroy]
 end

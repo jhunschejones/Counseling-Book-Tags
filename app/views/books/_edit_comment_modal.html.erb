@@ -1,0 +1,31 @@
+<div class="modal edit-comment-modal" data-target="comment-modal.editModal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title"></p>
+      <span class="icon close-comment-modal" data-action="click->comment-modal#closeEdit">
+        <i class="fas fa-lg fa-times"></i>
+      </span>
+    </header>
+    <section class="modal-card-body">
+      <div class="field">
+        <label class="label">
+          <span class="icon is-small is-left">
+            <i class="fas fa-comment"></i>
+          </span>
+          Edit your comment
+        </label>
+        <p class="control has-icons-left">
+          <textarea class="textarea edit-comment-input" rows="8" placeholder="e.g I found this book particularly helpful for..." name="comment[body]" data-action="keyup->comment-modal#updatePutBody"></textarea>
+        </p>
+        <div class="field edit-comment-button">
+          <div class="control">
+            <%= link_to "Update", comment_path(0, comment: { body: "", book_id: params[:id] }), method: :put, remote: true, class: "button is-info", data: { target: "comment-modal.updateButton", action: "click->comment-modal#update" } %>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="modal-card-foot">
+    </footer>
+  </div>
+</div>

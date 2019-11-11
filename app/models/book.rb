@@ -1,5 +1,6 @@
 class Book < ApplicationRecord
   has_many :tags, dependent: :destroy
+  has_many :comments, dependent: :destroy
   has_and_belongs_to_many :authors
   validates :title, :source, :source_id, :cover_url, presence: true
   # validates :title, uniqueness: true
@@ -34,7 +35,7 @@ class Book < ApplicationRecord
 
   def self.database_or_external(source, source_id)
     raise "Unrecognized source" unless SOURCES.include?(source)
-    book = Book.eager_load(:tags, :authors).where(source: source, source_id: source_id).first
+    book = Book.eager_load(:authors, :comments, :tags).where(source: source, source_id: source_id).first
     return book if book.present?
 
     case source

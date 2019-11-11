@@ -31,6 +31,7 @@ class BooksController < ApplicationController
     raise "Unrecognized source type" unless Book::SOURCES.include?(book_params[:source])
     @book = Book.database_or_external(book_params[:source], book_params[:id])
     @tags = @book[:id] ? @book.tags.order(:text) : []
+    @comments = @book[:id] ? @book.comments.order(:created_at) : []
     @authors = @book[:authors] ? @book[:authors] : @book.authors
   end
 

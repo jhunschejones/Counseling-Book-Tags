@@ -141,10 +141,50 @@
         border: none;
         padding: 10px 30px;
       }
+      label {
+        margin-top: -15px;
+      }
       footer {
-        padding-bottom: 15px;
+        padding-bottom: 10px;
       }
       .create-tag-button {
+        margin-top: 12px;
+      }
+    }
+  }
+  .comments {
+    .add-comment-button-row {
+      margin-bottom: 20px;
+      margin-top: -8px;
+    }
+    .edit-comment-button {
+      margin-right: 5px;
+    }
+    .modal {
+      .close-comment-modal {
+        margin-right: -16px;
+        padding-top: 10px;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      // Override bulma styles
+      header,
+      .modal-card-body,
+      footer {
+        // Bulma `$white-ter`
+        background-color: hsl(0, 0%, 96%);
+        border: none;
+        padding: 10px 30px;
+      }
+      label {
+        margin-top: -15px;
+      }
+      footer {
+        padding-bottom: 10px;
+      }
+      .create-comment-button,
+      .edit-comment-button {
         margin-top: 12px;
       }
     }

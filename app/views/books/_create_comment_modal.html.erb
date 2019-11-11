@@ -1,0 +1,36 @@
+<div class="modal comment-modal" data-target="comment-modal.newModal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title"></p>
+      <span class="icon close-comment-modal" data-action="click->comment-modal#closeCreate">
+        <i class="fas fa-lg fa-times"></i>
+      </span>
+    </header>
+    <section class="modal-card-body">
+      <%= form_with(model: @comment, url: comments_path) do |f| %>
+        <div class="field">
+          <label class="label">
+            <span class="icon is-small is-left">
+              <i class="fas fa-comment"></i>
+            </span>
+            Add a new comment
+          </label>
+          <p class="control has-icons-left">
+            <textarea class="textarea comment-input" rows="8" placeholder="e.g I found this book particularly helpful for..." name="comment[body]"></textarea>
+
+          </p>
+          <%= f.hidden_field "book[source]", value: book[:source] %>
+          <%= f.hidden_field "book[source_id]", value: book[:source_id] %>
+          <div class="field create-comment-button">
+            <div class="control">
+              <%= f.button "Create", type: :submit, class: "button is-info", data: {target: "comment-modal.submitButton", action: "click->comment-modal#submit"} %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </section>
+    <footer class="modal-card-foot">
+    </footer>
+  </div>
+</div>

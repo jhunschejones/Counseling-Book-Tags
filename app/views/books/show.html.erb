@@ -18,14 +18,12 @@
             <span>Tags</span>
           </a>
         </li>
-        <%#
         <li class="tab" data-action="click->book#changeTab" data-tab="comments">
           <a>
             <span class="icon is-small"><i class="fas fa-comment" aria-hidden="true"></i></span>
             <span>Comments</span>
           </a>
         </li>
-        %>
         <li class="tab" data-action="click->book#changeTab" data-tab="description">
           <a>
             <span class="icon is-small"><i class="fas fa-info-circle" aria-hidden="true"></i></span>
@@ -44,7 +42,7 @@
         </button>
       </div>
 
-      <%= render partial: "add_tag_modal", locals: { book: @book } %>
+      <%= render partial: "create_tag_modal", locals: { book: @book } %>
 
       <div class="field is-grouped is-grouped-multiline tags-container">
         <% @tags.each do |tag| %>
@@ -61,10 +59,25 @@
         <% end %>
       </div>
     </div>
-    <%#
-    <div class="tab-content comments">
+    <div class="tab-content comments" data-controller="comment-modal">
+      <div class="add-comment-button-row">
+        <button class="button is-warning is-small is-rounded" data-action="click->comment-modal#openCreate">
+          <span class="icon">
+            <i class="fas fa-plus"></i>
+          </span>
+          <span>Add a comment</span>
+        </button>
+      </div>
+
+      <%= render partial: "create_comment_modal", locals: { book: @book } %>
+      <%= render partial: "edit_comment_modal", locals: { book: @book } %>
+
+      <div class="comments-container">
+        <% @comments.each do |comment| %>
+          <%= render partial: 'comments/comment', locals: { user: @user, comment: comment } %>
+        <% end %>
+      </div>
     </div>
-    %>
     <div class="tab-content description">
     <% @book[:description].split("<br /><br />") do |paragraph| %>
       <p class="description-paragraph"><%= paragraph %></p>
