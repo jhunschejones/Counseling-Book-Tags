@@ -7,34 +7,34 @@ module Openlibrary
   OPENLIBRARY = "openlibrary".freeze
   AUTHOR_ROLE = "/type/author_role".freeze
 
-  def self.search_by_title(title, page=1)
-    Rails.cache.fetch("source:openlibrary:title:#{title}") do
+  def self.search_by_title(title, page=1, without_covers=false)
+    Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:title:#{title}") do
       response = HTTParty.get("https://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
-      format_book_results(response, page)
+      format_book_results(response, page, without_covers)
     end
   end
 
-  def self.search_by_author(author, page=1)
-    Rails.cache.fetch("source:openlibrary:author:#{author}") do
+  def self.search_by_author(author, page=1, without_covers=false)
+    Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:author:#{author}") do
       response = HTTParty.get("https://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
-      format_book_results(response, page)
+      format_book_results(response, page, without_covers)
     end
   end
 
-  def self.search_by_isbn(isbn, page=1)
-    Rails.cache.fetch("source:openlibrary:isbn:#{isbn}") do
+  def self.search_by_isbn(isbn, page=1, without_covers=false)
+    Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:isbn:#{isbn}") do
       response = HTTParty.get("https://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
-      format_book_results(response, page)
+      format_book_results(response, page, without_covers)
     end
   end
 
   def self.search_by_query_params(params)
     if params[:title]
-      Openlibrary.search_by_title(params[:title], params[:page] || 1)
+      Openlibrary.search_by_title(params[:title], params[:page] || 1, params[:without_covers] || false)
     elsif params[:author]
-      Openlibrary.search_by_author(params[:author], params[:page] || 1)
+      Openlibrary.search_by_author(params[:author], params[:page] || 1, params[:without_covers] || false)
     elsif params[:isbn]
-      Openlibrary.search_by_isbn(params[:isbn], params[:page] || 1)
+      Openlibrary.search_by_isbn(params[:isbn], params[:page] || 1, params[:without_covers] || false)
     else
       raise UnrecognizedSearchType
     end
@@ -74,7 +74,7 @@ module Openlibrary
       .split(/-{3,}/)[0] # remove end section divided by 3+ dashes
   end
 
-  def self.format_book_results(results, page)
+  def self.format_book_results(results, page, without_covers)
     if results["num_found"].to_i == 0
       return { total_results: 0, current_page: 1, page_start: 0, page_end: 0, total_pages: 1, books: [] }
     end
@@ -84,13 +84,13 @@ module Openlibrary
       page_start: results["start"].to_i,
       page_end: (results["start"].to_i + BOOKS_PER_PAGE),
       total_pages: (results["num_found"].to_f / BOOKS_PER_PAGE).floor,
-      books: results["docs"].map { |result| format_book(result) }.compact,
+      books: results["docs"].map { |result| format_book(result, without_covers) }.compact,
     }
   end
 
-  def self.format_book(result)
+  def self.format_book(result, without_covers)
     # Don't return books without covers or authors
-    return nil if book_missing_info?(result)
+    return nil if book_missing_info?(result) && !without_covers
     {
       source_id: result["key"].gsub("/works/", ""),
       source: OPENLIBRARY,
@@ -102,10 +102,12 @@ module Openlibrary
   end
 
   def self.book_missing_info?(result)
+    # To clean up results further, filter out books missing these values:
+    # result["id_amazon"]
+    # result["has_fulltext"]
     !result["cover_i"] ||
     result["cover_i"] == -1 ||
-    !result["author_name"] ||
-    !result["has_fulltext"]
+    !result["author_name"]
   end
 
   def self.format_author(result)

@@ -1,7 +1,7 @@
 import { Controller } from "stimulus"
 
 export default class extends Controller {
-  static targets = [ "search", "database", "goodreads", "openlibrary" ]
+  static targets = [ "search", "database", "goodreads", "openlibrary", "withoutCovers" ]
 
   initialize() {
     // Hide flash on page back
@@ -25,6 +25,10 @@ export default class extends Controller {
     this.searchTarget.placeholder = `Search by ${selectedTab}...`;
   }
 
+  toggleAdvanced() {
+    this.withoutCoversTarget.parentNode.classList.toggle("is-hidden");
+  }
+
   search(e) {
     if(e.keyCode == 13) {
       const searchValue = this.searchTarget.value.trim();
@@ -32,12 +36,17 @@ export default class extends Controller {
       // `is-loading` class goes on the input field container
       this.searchTarget.parentNode.classList.add("is-loading");
       const searchType = document.querySelector('.panel-tabs .tab.is-active').dataset['value'];
+      let searchPath = this.withoutCoversTarget.checked ? "/books?without_covers=true&" : "/books?"
+
       if (this.databaseTarget.checked) {
-        return window.location = `/books?${searchType}=${searchValue}`;
+        return window.location = `${searchPath}${searchType}=${searchValue}`
+        // return window.location = `/books?${searchType}=${searchValue}`;
       } else if (this.goodreadsTarget.checked) {
-        return window.location = `/books?${searchType}=${searchValue}&source=goodreads`;
+        return window.location = `${searchPath}${searchType}=${searchValue}&source=goodreads`
+        // return window.location = `/books?${searchType}=${searchValue}&source=goodreads`;
       } else if (this.openlibraryTarget.checked) {
-        return window.location = `/books?${searchType}=${searchValue}&source=openlibrary`;
+        return window.location = `${searchPath}${searchType}=${searchValue}&source=openlibrary`
+        // return window.location = `/books?${searchType}=${searchValue}&source=openlibrary`;
       }
     }
   }

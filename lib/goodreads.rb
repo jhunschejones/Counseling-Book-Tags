@@ -4,25 +4,25 @@ module Goodreads
   class BookNotFound < StandardError; end
   class UnrecognizedSearchType < StandardError; end
 
-  def self.search_by_title(title, page=1)
-    Rails.cache.fetch("source:goodreads:title:#{title}:page:#{page}") do
+  def self.search_by_title(title, page=1, without_covers=false)
+    Rails.cache.fetch("source:goodreads:without_covers:#{without_covers}:title:#{title}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{title}&search[field]=title&page=#{page}", timeout: 12).parsed_response
-      format_book_results(response, page)
+      format_book_results(response, page, without_covers)
     end
   end
 
-  def self.search_by_author(author, page=1)
-    Rails.cache.fetch("source:goodreads:author:#{author}:page:#{page}") do
+  def self.search_by_author(author, page=1, without_covers=false)
+    Rails.cache.fetch("source:goodreads:without_covers:#{without_covers}:author:#{author}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{author}&search[field]=author&page=#{page}", timeout: 12).parsed_response
-      format_book_results(response, page)
+      format_book_results(response, page, without_covers)
     end
   end
 
   # Goodreads API appears to only work with ISBN13?
-  def self.search_by_isbn(isbn, page=1)
-    Rails.cache.fetch("source:goodreads:isbn:#{isbn}:page:#{page}") do
+  def self.search_by_isbn(isbn, page=1, without_covers=false)
+    Rails.cache.fetch("source:goodreads:without_covers:#{without_covers}:isbn:#{isbn}:page:#{page}") do
       response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
-      format_book_results(response, page)
+      format_book_results(response, page, without_covers)
     end
   end
 
@@ -66,11 +66,11 @@ module Goodreads
 
   def self.search_by_query_params(params)
     if params[:title]
-      Goodreads.search_by_title(params[:title], params[:page] || 1)
+      Goodreads.search_by_title(params[:title], params[:page] || 1, params[:without_covers] || false)
     elsif params[:author]
-      Goodreads.search_by_author(params[:author], params[:page] || 1)
+      Goodreads.search_by_author(params[:author], params[:page] || 1, params[:without_covers] || false)
     elsif params[:isbn]
-      Goodreads.search_by_isbn(params[:isbn], params[:page] || 1)
+      Goodreads.search_by_isbn(params[:isbn], params[:page] || 1, params[:without_covers] || false)
     else
       raise UnrecognizedSearchType
     end
@@ -102,7 +102,7 @@ module Goodreads
       .gsub(/--\w*.com$/, "") # remove source citation
   end
 
-  def self.format_book_results(results, current_page)
+  def self.format_book_results(results, current_page, without_covers)
     if results["GoodreadsResponse"]["search"]["total_results"].to_i == 0
       {
         total_results: 0,
@@ -115,8 +115,8 @@ module Goodreads
     else
       book_results = results["GoodreadsResponse"]["search"]["results"]["work"]
       books = book_results.kind_of?(Array) ?
-              book_results.map { |book_result| format_book(book_result) }.compact :
-              [format_book(book_results)] # books should always return array
+              book_results.map { |book_result| format_book(book_result, without_covers) }.compact :
+              [format_book(book_results, without_covers)] # books should always return array
       {
         total_results: results["GoodreadsResponse"]["search"]["total_results"].to_i,
         current_page: current_page.to_i,
@@ -128,9 +128,11 @@ module Goodreads
     end
   end
 
-  def self.format_book(book_result)
+  def self.format_book(book_result, without_covers)
     # do not return books without a photo
-    return nil if book_result["best_book"]["image_url"].include?("nophoto")
+    puts "WITHOUT COVERS!"
+    p without_covers
+    return nil if book_result["best_book"]["image_url"].include?("nophoto") && !without_covers
     {
       source_id: book_result["best_book"]["id"],
       source: "goodreads",
