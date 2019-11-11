@@ -31,15 +31,15 @@
       <input type="radio" name="source" value="openlibrary" data-target="search-panel.openlibrary">
       <p class="radio-option">Openlibrary</p>
     </label>
-    <a class="panel-block radio-header" data-action="click->search-panel#toggleAdvanced">
+    <a class="panel-block radio-header advanced-search-dropdown" data-action="click->search-panel#toggleAdvanced">
       Advanced options:
       <span class="icon">
         <i class="fas fa-caret-down"></i>
       </span>
     </a>
-    <label class="panel-block checkbox is-hidden">
+    <label class="panel-block checkbox is-hidden search-without-covers">
       <input type="checkbox" data-target="search-panel.withoutCovers">
-      <span class="has-text-danger">Include books without covers</span>
+      <span>Include books without covers <span class="has-text-danger">(less acurate results)</span></span>
     </label>
   </article>
 </div>
