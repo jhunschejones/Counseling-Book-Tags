@@ -3,10 +3,11 @@ class Book < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_and_belongs_to_many :authors
   validates :title, :source, :source_id, :cover_url, presence: true
-  # validates :title, uniqueness: true
+  before_create :set_title_keywords
   OPENLIBRARY = "openlibrary".freeze
   GOODREADS = "goodreads".freeze
   SOURCES = [GOODREADS, OPENLIBRARY].freeze
+  NOT_KEYWORDS = ["AND", "THE", "OR", "OF", "A"].freeze
 
   # Find books that match ALL searched tags and return those records
   # along with all their associated tags
@@ -52,14 +53,23 @@ class Book < ApplicationRecord
 
   def self.by_query_params(params)
     if params[:title]
-      Book.eager_load(:authors).where("lower(title) LIKE :query", query: "%#{params[:title].downcase}%")
+      # Field level title search
+      # Book.eager_load(:authors).where("lower(title) LIKE :query", query: "%#{params[:title].downcase}%")
+
+      # Array level title search by keywords
+      Book.eager_load(:authors).where("ARRAY[:title_keywords]::varchar[] && title_keywords", title_keywords: Book.title_keywords(params[:title]))
     elsif params[:author]
-      Book.eager_load(:authors).where("lower(authors.name) LIKE :query", query: "%#{params[:author].downcase}%").references(:authors)
+      # Field level author search
+      # Book.eager_load(:authors).where("lower(authors.name) LIKE :query", query: "%#{params[:author].downcase}%").references(:authors)
+
+      # Array level author search by keywords
+      Book.eager_load(:authors).where("ARRAY[:name_keywords]::varchar[] && authors.name_keywords", name_keywords: Author.name_keywords(params[:author])).references(:authors)
     elsif params[:isbn]
       # Field level ISBN search
       # Book.where(isbn: params[:isbn].to_i).or(where(isbn13: params[:isbn].to_i)).eager_load(:authors)
+
       # Array ISBN search
-      Book.where(":isbn = ANY(isbns)", isbn: params[:isbn].to_i).eager_load(:authors)
+      Book.where(":isbn = ANY(isbns)", isbn: params[:isbn]).eager_load(:authors)
     else
       raise "Unrecognized search type"
     end
@@ -92,4 +102,21 @@ class Book < ApplicationRecord
   rescue Openlibrary::BookNotFound
     raise "Unable to find book with Openlibrary id '#{book_id}'"
   end
+
+  def self.title_keywords(title)
+    # remove non-word, non-space characters
+    title.gsub(/[^\w\s]/, "").upcase.split.map do |word|
+      word = word.strip
+      if NOT_KEYWORDS.include?(word) || !word.present?
+        nil
+      else
+        word
+      end
+    end.compact.uniq
+  end
+
+  private
+    def set_title_keywords
+      self.title_keywords = Book.title_keywords(self.title)
+    end
 end

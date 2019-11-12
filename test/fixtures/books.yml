@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  source_id: 1
+  source_id: "1"
   source: "goodreads"
   title: Adventures in Ruby
-  author: Carl Fox
-  isbn: 1111
+  title_keywords: ["ADVENTURES", "IN", "RUBY"]
+  isbns: ["1111", "1235"]
   published_year: 2005
   publisher: Fox Publications
   cover_url:
@@ -13,11 +13,11 @@ one:
   language:
 
 two:
-  source_id: 2
+  source_id: "2"
   source: "goodreads"
   title: Counseling 101
-  author: Carl Fox
-  isbn: 222
+  title_keywords: ["COUNSELING", "101"]
+  isbns: ["222"]
   published_year: 2019
   publisher: Fox Publications
   cover_url:
