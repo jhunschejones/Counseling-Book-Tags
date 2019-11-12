@@ -18,7 +18,7 @@ class Book < ApplicationRecord
     #                   WHERE (tags.text ILIKE ALL ( array[?] ))", query_array])
     Book.find_by_sql(["SELECT DISTINCT books.* FROM books
                       INNER JOIN tags ON books.id = tags.book_id
-                      WHERE books.searchable_tags @> array[?]", tags])
+                      WHERE books.searchable_tags @> array[?]::varchar[]", tags])
   end
 
   def self.find_or_create(source, source_id)
