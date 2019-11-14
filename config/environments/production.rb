@@ -38,8 +38,8 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Expire session cookies after 7 days
-  config.session_store :cookie_store, expire_after: 7.days
+  # Expire session cookies after 7 days, serve https-only in production
+  config.session_store :cookie_store, expire_after: 7.days, secure: Rails.env.production?
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
