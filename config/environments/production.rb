@@ -41,6 +41,8 @@ Rails.application.configure do
   # Expire session cookies after 7 days, serve https-only in production
   config.session_store :cookie_store, expire_after: 7.days, secure: Rails.env.production?
 
+  config.force_ssl = true
+
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
   # config.action_cable.url = 'wss://example.com/cable'
@@ -51,7 +53,7 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  config.log_level = :info
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
