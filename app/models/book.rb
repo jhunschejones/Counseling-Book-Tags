@@ -9,16 +9,8 @@ class Book < ApplicationRecord
   SOURCES = [GOODREADS, OPENLIBRARY].freeze
   NOT_KEYWORDS = ["AND", "THE", "OR", "OF", "A"].freeze
 
-  # Find books that match ALL searched tags and return those records
-  # along with all their associated tags
   def self.by_tags(tags)
-    # query_array = tags.map {|tag| "%#{tag}%" }
-    # Book.find_by_sql(["SELECT DISTINCT books.* FROM books
-    #                   INNER JOIN tags ON books.id = tags.book_id
-    #                   WHERE (tags.text ILIKE ALL ( array[?] ))", query_array])
-    Book.find_by_sql(["SELECT DISTINCT books.* FROM books
-                      INNER JOIN tags ON books.id = tags.book_id
-                      WHERE books.searchable_tags @> array[?]::varchar[]", tags])
+    Book.eager_load(:authors, :tags).where("searchable_tags @> array[?]::varchar[]", tags)
   end
 
   def self.find_or_create(source, source_id)
