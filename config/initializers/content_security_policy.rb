@@ -10,7 +10,7 @@ if Rails.env.production?
     policy.img_src     :self, :https, :data
     policy.object_src  :none
     policy.script_src  :self, :unsafe_inline
-    policy.style_src   :self, :unsafe_inline
+    policy.style_src   :self, :unsafe_inline, "https://js-agent.newrelic.com", "https://bam.nr-data.net"
     # If you are using webpack-dev-server then specify webpack-dev-server host
     # policy.connect_src :self, :https, "http://localhost:3035", "ws://localhost:3035"
 
