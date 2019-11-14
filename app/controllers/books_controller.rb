@@ -19,7 +19,7 @@ class BooksController < ApplicationController
     elsif book_params.present?
       @books = Book.by_query_params(book_params)
     else
-      @books = Book.order(:title)
+      @books = Book.eager_load(:authors).order(:title)
     end
 
     if @books.length == 0 || (!@books[0] && @books.length == 1)
