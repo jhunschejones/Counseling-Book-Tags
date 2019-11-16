@@ -2,27 +2,30 @@ require 'test_helper'
 
 # `bundle exec ruby -Itest /Users/jjones/Documents/GitHub/Counseling-Book-Tags/test/models/book_test.rb`
 class BookTest < ActiveSupport::TestCase
+  fixtures :books
+
   describe "title_keywords" do
     test "ignores special characters and duplicate words" do
+      expected_keywords = ["HARRY", "POTTER", "SOURCERERS", "STONE", "BOOK", "1"]
       keywords = Book.title_keywords("Harry Potter and the Sourcerer's Stone (Harry Potter Book 1)")
-      assert_equal keywords, ["HARRY", "POTTER", "SOURCERERS", "STONE", "BOOK", "1"]
+      assert_equal expected_keywords, keywords
     end
   end
 
   describe "by_query_params :title" do
     test "works with extra words" do
-      result = Book.by_query_params({title: "Adventures in the Land of Ruby"})
-      assert_equal result[0].title, "Adventures in Ruby"
+      result = Book.by_query_params({title: books(:one).title})
+      assert_equal books(:one).title, result[0].title
     end
 
     test "works with missing words" do
-      result = Book.by_query_params({title: "Ruby"})
-      assert_equal result[0].title, "Adventures in Ruby"
+      result = Book.by_query_params({title: books(:one).title.split[0]})
+      assert_equal books(:one).title, result[0].title
     end
 
     test "does not return books that do not match" do
-      titles = Book.by_query_params({title: "Adventures in Ruby"}).map { |book| book.title }
-      refute titles.include?("Counseling 101")
+      titles = Book.by_query_params({title: books(:one).title}).map { |book| book.title }
+      refute titles.include?(books(:two).title)
     end
   end
 
@@ -36,12 +39,12 @@ class BookTest < ActiveSupport::TestCase
 
     test "works with extra words" do
       result = Book.by_query_params({author: "J.K. Rowling The Great"})
-      assert_equal result[0].authors[0].name, "J.K. Rowling"
+      assert_equal "J.K. Rowling", result[0].authors[0].name
     end
 
     test "works with missing words" do
       result = Book.by_query_params({author: "Rowling"})
-      assert_equal result[0].authors[0].name, "J.K. Rowling"
+      assert_equal "J.K. Rowling", result[0].authors[0].name
     end
 
     test "does not return books that do not match" do
@@ -52,8 +55,8 @@ class BookTest < ActiveSupport::TestCase
 
   describe "by_query_params :isbn" do
     test "returns books matching one isbn" do
-      result = Book.by_query_params({isbn: "1235"})
-      assert_equal result[0].title, "Adventures in Ruby"
+      result = Book.by_query_params({isbn: books(:one).isbns[1]})
+      assert_equal books(:one).title, result[0].title
     end
 
     test "doesn't return books that have no matching isbns" do
@@ -65,27 +68,27 @@ class BookTest < ActiveSupport::TestCase
   describe "by_query_params unrecognized param" do
     test "raises" do
       exception = assert_raises(RuntimeError) { Book.by_query_params({cover: "image.jpg"}) }
-      assert_equal exception.message, "Unrecognized search type"
+      assert_equal "Unrecognized search type", exception.message
     end
   end
 
   describe "find_or_create" do
     test "raises for unrecognized source" do
       exception = assert_raises(RuntimeError) { Book.find_or_create("library", "1") }
-      assert_equal exception.message, "Unrecognized source"
+      assert_equal "Unrecognized source", exception.message
     end
 
     describe "when book does not exist in db" do
       test "creates new book from goodreads" do
         Book.find_or_create("goodreads", 3)
-        assert_equal Book.last.source_id, "3"
-        assert_equal Book.last.source, "goodreads"
+        assert_equal "3", Book.last.source_id
+        assert_equal "goodreads", Book.last.source
       end
 
       test "creates new book from openlibrary" do
         Book.find_or_create("openlibrary", "OL82592W")
-        assert_equal Book.last.source_id, "OL82592W"
-        assert_equal Book.last.source, "openlibrary"
+        assert_equal "OL82592W", Book.last.source_id
+        assert_equal "openlibrary", Book.last.source
       end
     end
 
@@ -99,16 +102,17 @@ class BookTest < ActiveSupport::TestCase
 
       test "returns existing goodreads book from db" do
         before_count = Book.count
+        expected_title = "The Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy, #1)"
         book = Book.find_or_create("goodreads", 16)
-        assert_equal Book.count, before_count
-        assert_equal book.title, "The Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy, #1)"
+        assert_equal before_count, Book.count
+        assert_equal expected_title, book.title
       end
 
       test "returns existing openlibrary book from db" do
         before_count = Book.count
         book = Book.find_or_create("openlibrary", "OL82592W")
-        assert_equal Book.count, before_count
-        assert_equal book.title, "Harry Potter and the Philosopher's Stone"
+        assert_equal before_count, Book.count
+        assert_equal "Harry Potter and the Philosopher's Stone", book.title
       end
     end
   end
@@ -116,30 +120,31 @@ class BookTest < ActiveSupport::TestCase
   describe "database_or_external" do
     test "raises for unrecognized source" do
       exception = assert_raises(RuntimeError) { Book.database_or_external("library", "1") }
-      assert_equal exception.message, "Unrecognized source"
+      assert_equal "Unrecognized source", exception.message
     end
 
     describe "when book does not exist in db" do
       test "returns goodreads book" do
+        expected_title = "Harry Potter and the Sorcerer's Stone (Harry Potter, #1)"
         book = Book.database_or_external("goodreads", 3)
-        assert_equal book[:title], "Harry Potter and the Sorcerer's Stone (Harry Potter, #1)"
+        assert_equal expected_title, book[:title]
         assert_nil book[:id] # no :id when not in database
       end
 
       test "returns openlibrary book" do
         book = Book.database_or_external("openlibrary", "OL82592W")
-        assert_equal book[:title], "Harry Potter and the Philosopher's Stone"
+        assert_equal "Harry Potter and the Philosopher's Stone", book[:title]
         assert_nil book[:id] # no :id when not in database
       end
 
       test "raises for bad goodreads source_id" do
         exception = assert_raises(RuntimeError) { Book.database_or_external("goodreads", 0) }
-        assert_equal exception.message, "Unable to find book with Goodreads id '0'"
+        assert_equal "Unable to find book with Goodreads id '0'", exception.message
       end
 
       test "raises for bad openlibrary source_id" do
         exception = assert_raises(RuntimeError) { Book.database_or_external("openlibrary", 0) }
-        assert_equal exception.message, "Unable to find book with Openlibrary id '0'"
+        assert_equal "Unable to find book with Openlibrary id '0'", exception.message
       end
     end
 
@@ -152,14 +157,15 @@ class BookTest < ActiveSupport::TestCase
       end
 
       test "returns goodreads book" do
+        expected_title = "Harry Potter and the Sorcerer's Stone (Harry Potter, #1)"
         book = Book.database_or_external("goodreads", 3)
-        assert_equal book[:title], "Harry Potter and the Sorcerer's Stone (Harry Potter, #1)"
+        assert_equal expected_title, book[:title]
         refute_nil book[:id] # :id only exists on valid DB record
       end
 
       test "returns openlibrary book" do
         book = Book.database_or_external("openlibrary", "OL82592W")
-        assert_equal book[:title], "Harry Potter and the Philosopher's Stone"
+        assert_equal "Harry Potter and the Philosopher's Stone", book[:title]
         refute_nil book[:id] # :id only exists on valid DB record
       end
     end

@@ -3,23 +3,21 @@
 one:
   source_id: "1"
   source: "goodreads"
-  title: Adventures in Ruby
-  title_keywords: ["ADVENTURES", "IN", "RUBY"]
+  title: Be Nice To Squirrels
+  title_keywords: ["BE", "NICE", "TO", "SQUIRRELS"]
   isbns: ["1111", "1235"]
   published_year: 2005
   publisher: Fox Publications
-  cover_url:
-  description:
-  language:
+  description: ""
+  cover_url: ""
 
 two:
   source_id: "2"
   source: "goodreads"
-  title: Counseling 101
-  title_keywords: ["COUNSELING", "101"]
+  title: Counseling Rodents
+  title_keywords: ["COUNSELING", "RODENTS"]
   isbns: ["222"]
   published_year: 2019
   publisher: Fox Publications
-  cover_url:
-  description:
-  language:
+  description: ""
+  cover_url: ""
