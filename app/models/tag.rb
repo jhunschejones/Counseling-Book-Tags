@@ -3,7 +3,7 @@ class Tag < ApplicationRecord
   belongs_to :book
   validates :text, :user, :book, presence: true
   before_save :title_case
-  NON_CAPITALIZED_WORDS = ["a", "an", "the", "and", "but", "or", "nor", "for", "at", "by", "in", "from", "on", "to"].freeze
+  NON_CAPITALIZED_WORDS = ["a", "an", "and", "at", "but", "by", "for", "from", "in", "is", "nor", "on", "or", "the", "to"].freeze
 
   def self.uniques_from_list_of_books(books)
     books.map { |book| book.tags }.flatten.uniq { |tag| tag.text }

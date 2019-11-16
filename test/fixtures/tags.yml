@@ -1,11 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  text: Rails
+  text: Literary
   user: one
   book: one
 
 two:
-  text: Counseling
+  text: Bold
+  user: one
+  book: one
+
+three:
+  text: Bold
   user: two
+  book: two
+
+four:
+  text: Colorful
+  user: one
   book: two

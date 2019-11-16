@@ -11,7 +11,6 @@ class Comment < ApplicationRecord
         type: "comment",
         attributes: {
           body: self.html_safe_body,
-          # body: self.body.gsub(/\n{2,}/, "<br /><br />"),
           createdAt: self.created_at.localtime.to_formatted_s(:long_ordinal),
         },
         relationships: {
@@ -31,6 +30,6 @@ class Comment < ApplicationRecord
   private
     def sanitize_body
       # remove trailing spaces and html tags
-      self.body = self.body.strip.gsub(/<\/?\w*>/, "")
+      self.body = self.body.strip.gsub(/<\/?\w*\s?\/?>/, "")
     end
 end

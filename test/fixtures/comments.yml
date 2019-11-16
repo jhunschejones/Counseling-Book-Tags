@@ -3,9 +3,9 @@
 one:
   user: one
   book: one
-  body: MyText
+  body: This book was definitly my favorite
 
 two:
   user: two
   book: two
-  body: MyText
+  body: I would reccomend this book to friends
