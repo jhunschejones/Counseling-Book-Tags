@@ -53,6 +53,7 @@ group :test do
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
   gem 'minitest-rails'
+  gem 'database_cleaner'
 end
 
 group :production do

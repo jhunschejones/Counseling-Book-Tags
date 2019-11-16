@@ -75,6 +75,7 @@ GEM
     childprocess (3.0.0)
     concurrent-ruby (1.1.5)
     crass (1.0.5)
+    database_cleaner (1.7.0)
     erubi (1.9.0)
     ffi (1.11.2)
     font_awesome5_rails (0.9.0)
@@ -219,6 +220,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
   capybara (>= 2.15)
+  database_cleaner
   font_awesome5_rails
   httparty
   jbuilder (~> 2.7)
