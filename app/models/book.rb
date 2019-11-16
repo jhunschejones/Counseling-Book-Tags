@@ -45,22 +45,10 @@ class Book < ApplicationRecord
 
   def self.by_query_params(params)
     if params[:title]
-      # Field level title search
-      # Book.eager_load(:authors).where("lower(title) LIKE :query", query: "%#{params[:title].downcase}%")
-
-      # Array level title search by keywords
       Book.eager_load(:authors).where("ARRAY[:title_keywords]::varchar[] && title_keywords", title_keywords: Book.title_keywords(params[:title]))
     elsif params[:author]
-      # Field level author search
-      # Book.eager_load(:authors).where("lower(authors.name) LIKE :query", query: "%#{params[:author].downcase}%").references(:authors)
-
-      # Array level author search by keywords
       Book.eager_load(:authors).where("ARRAY[:name_keywords]::varchar[] && authors.name_keywords", name_keywords: Author.name_keywords(params[:author])).references(:authors)
     elsif params[:isbn]
-      # Field level ISBN search
-      # Book.where(isbn: params[:isbn].to_i).or(where(isbn13: params[:isbn].to_i)).eager_load(:authors)
-
-      # Array ISBN search
       Book.where(":isbn = ANY(isbns)", isbn: params[:isbn]).eager_load(:authors)
     else
       raise "Unrecognized search type"
