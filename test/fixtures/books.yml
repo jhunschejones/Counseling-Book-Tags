@@ -8,8 +8,8 @@ one:
   isbns: ["1111", "1235"]
   published_year: 2005
   publisher: Fox Publications
-  description: ""
-  cover_url: ""
+  description: "A stirring call to action for our generation"
+  cover_url: "https://compote.slate.com/images/daa8e7d2-7a63-4c48-80b8-57b98e3be321.jpg"
 
 two:
   source_id: "2"
@@ -19,5 +19,5 @@ two:
   isbns: ["222"]
   published_year: 2019
   publisher: Fox Publications
-  description: ""
-  cover_url: ""
+  description: "The real beginners guide to counseling rodents"
+  cover_url: "https://www.vetmed.wisc.edu/wp-content/uploads/2015/07/Payseur_lab_mice10_9951.jpg"
