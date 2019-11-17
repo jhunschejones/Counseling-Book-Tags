@@ -6,14 +6,18 @@ class CommentsController < ApplicationController
   end
 
   def update
-    comment = Comment.find(params["id"].to_i)
-    render json: comment.update(body: comment_params[:body]) ? comment.success_response : :internal_server_error
+    comment = Comment.where(id: params["id"].to_i, user_id: @user.id).first
+    if comment.present? && comment.update(body: comment_params[:body])
+      render json: comment.success_response
+    else
+      head :internal_server_error
+    end
   end
 
   def destroy
-    comment = Comment.find(params["id"].to_i)
+    comment = Comment.where(id: params["id"].to_i, user_id: @user.id).first
     # JSON API content deleted response
-    head comment.destroy ? :no_content : :internal_server_error
+    head comment && comment.destroy ? :no_content : :internal_server_error
   end
 
   private
