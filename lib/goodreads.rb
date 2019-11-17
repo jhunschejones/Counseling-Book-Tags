@@ -130,8 +130,6 @@ module Goodreads
 
   def self.format_book(book_result, without_covers)
     # do not return books without a photo
-    puts "WITHOUT COVERS!"
-    p without_covers
     return nil if book_result["best_book"]["image_url"].include?("nophoto") && !without_covers
     {
       source_id: book_result["best_book"]["id"],
