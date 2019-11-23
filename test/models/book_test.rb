@@ -96,8 +96,8 @@ class BookTest < ActiveSupport::TestCase
       setup do
         # Douglas Adams, The Hitchhiker's Guide to the Galaxy
         Book.create_goodreads_book(16)
-        # J.K. Rowling, Harry Potter and the Philosopher's Stone
-        Book.create_openlibrary_book("OL82592W")
+        # J.K. Rowling, Harry Potter and the Chamber of Secrets
+        Book.create_openlibrary_book("OL16313124W")
       end
 
       test "returns existing goodreads book from db" do
@@ -110,9 +110,9 @@ class BookTest < ActiveSupport::TestCase
 
       test "returns existing openlibrary book from db" do
         before_count = Book.count
-        book = Book.find_or_create("openlibrary", "OL82592W")
+        book = Book.find_or_create("openlibrary", "OL16313124W")
         assert_equal before_count, Book.count
-        assert_equal "Harry Potter and the Philosopher's Stone", book.title
+        assert_equal "Harry Potter and the Chamber of Secrets", book.title
       end
     end
   end
@@ -132,8 +132,8 @@ class BookTest < ActiveSupport::TestCase
       end
 
       test "returns openlibrary book" do
-        book = Book.database_or_external("openlibrary", "OL82592W")
-        assert_equal "Harry Potter and the Philosopher's Stone", book[:title]
+        book = Book.database_or_external("openlibrary", "OL16313124W")
+        assert_equal "Harry Potter and the Chamber of Secrets", book[:title]
         assert_nil book[:id] # no :id when not in database
       end
 
@@ -152,8 +152,8 @@ class BookTest < ActiveSupport::TestCase
       setup do
         # Douglas Adams, The Hitchhiker's Guide to the Galaxy
         Book.create_goodreads_book(3)
-        # J.K. Rowling, Harry Potter and the Philosopher's Stone
-        Book.create_openlibrary_book("OL82592W")
+        # J.K. Rowling, Harry Potter and the Chamber of Secrets
+        Book.create_openlibrary_book("OL16313124W")
       end
 
       test "returns goodreads book" do
@@ -164,8 +164,8 @@ class BookTest < ActiveSupport::TestCase
       end
 
       test "returns openlibrary book" do
-        book = Book.database_or_external("openlibrary", "OL82592W")
-        assert_equal "Harry Potter and the Philosopher's Stone", book[:title]
+        book = Book.database_or_external("openlibrary", "OL16313124W")
+        assert_equal "Harry Potter and the Chamber of Secrets", book[:title]
         refute_nil book[:id] # :id only exists on valid DB record
       end
     end

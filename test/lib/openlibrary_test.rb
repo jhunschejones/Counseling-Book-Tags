@@ -4,11 +4,11 @@ require 'test_helper'
 class OpenlibraryTest < ActiveSupport::TestCase
   setup do
     @hp_one = {
-      source_id: "OL82592W",
+      source_id: "OL16313124W",
       source: "openlibrary",
-      title: "Harry Potter and the Philosopher's Stone",
-      published_year: 1997,
-      cover_url: "https://covers.openlibrary.org/b/id/7707760-L.jpg",
+      title: "Harry Potter and the Chamber of Secrets",
+      published_year: 1998,
+      cover_url: "https://covers.openlibrary.org/b/id/8108733-L.jpg",
       authors: ["J. K. Rowling"]
     }
   end
