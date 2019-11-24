@@ -6,8 +6,8 @@ class Author < ApplicationRecord
 
   def self.name_keywords(name)
     # remove non-word, non-space characters
-    name.gsub(/[^\w\s]/, "").upcase.split.map do |word|
-      word = word.strip
+    name.gsub(/[^\w\s]/, "").upcase.split.map! do |word|
+      word.strip!
       if NOT_KEYWORDS.include?(word) || !word.present?
         nil
       else

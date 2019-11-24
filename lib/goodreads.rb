@@ -33,7 +33,7 @@ module Goodreads
       book = response["GoodreadsResponse"]["book"]
       authors =
         if book["authors"]["author"].kind_of?(Array)
-          book["authors"]["author"].map { |author| format_author(author) }.compact
+          book["authors"]["author"].map! { |author| format_author(author) }.compact!
         else
           # `authors` is returned as an array
           [format_author(book["authors"]["author"])]
@@ -115,7 +115,7 @@ module Goodreads
     else
       book_results = results["GoodreadsResponse"]["search"]["results"]["work"]
       books = book_results.kind_of?(Array) ?
-              book_results.map { |book_result| format_book(book_result, without_covers) }.compact :
+              book_results.map! { |book_result| format_book(book_result, without_covers) }.compact! :
               [format_book(book_results, without_covers)] # books should always return array
       {
         total_results: results["GoodreadsResponse"]["search"]["total_results"].to_i,

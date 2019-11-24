@@ -11,9 +11,7 @@ class Tag < ApplicationRecord
 
   def title_case
     self.text = self.text.downcase.split.map.with_index do |word, index|
-      if index == 0
-        word.capitalize
-      elsif !NON_CAPITALIZED_WORDS.include?(word)
+      if index == 0 || !NON_CAPITALIZED_WORDS.include?(word)
         word.capitalize
       else
         word

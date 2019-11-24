@@ -3,7 +3,7 @@ require 'httparty'
 module Openlibrary
   class BookNotFound < StandardError; end
   class UnrecognizedSearchType < StandardError; end
-  BOOKS_PER_PAGE = 1000 # try to return all results in one pass
+  BOOKS_PER_PAGE = 200
   OPENLIBRARY = "openlibrary".freeze
   AUTHOR_ROLE = "/type/author_role".freeze
 
@@ -53,7 +53,7 @@ module Openlibrary
         source_id: book_id,
         source: OPENLIBRARY,
         title: book_response["title"],
-        authors: author_responses.map { |a| format_author(a) },
+        authors: author_responses.map! { |a| format_author(a) },
         isbns: book_search ? book_search["isbn"] : [0],
         published_year: book_search ? (book_search["first_publish_year"] || book_search["publish_date"][0].gsub(/\D/, "")) : nil,
         # publisher: book["publisher"], # too many of these to be practical
@@ -84,7 +84,7 @@ module Openlibrary
       page_start: results["start"].to_i,
       page_end: (results["start"].to_i + BOOKS_PER_PAGE),
       total_pages: (results["num_found"].to_f / BOOKS_PER_PAGE).floor,
-      books: results["docs"].map { |result| format_book(result, without_covers) }.compact,
+      books: results["docs"].map! { |result| format_book(result, without_covers) }.compact!,
     }
   end
 
