@@ -6,6 +6,7 @@ module Openlibrary
   BOOKS_PER_PAGE = 200
   OPENLIBRARY = "openlibrary".freeze
   AUTHOR_ROLE = "/type/author_role".freeze
+  PLACEHOLDER_IMAGE_URL = "https://www.abbeville.com/assets/common/images/edition_placeholder.png".freeze
 
   def self.search_by_title(title, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:title:#{title}") do
@@ -57,7 +58,7 @@ module Openlibrary
         isbns: book_search ? book_search["isbn"] : [0],
         published_year: book_search ? (book_search["first_publish_year"] || book_search["publish_date"][0].gsub(/\D/, "")) : nil,
         # publisher: book["publisher"], # too many of these to be practical
-        cover_url: "https://covers.openlibrary.org/b/id/#{book_response["covers"][0]}-L.jpg", # there is an array of several covers to choose from here
+        cover_url: book_response["covers"] ? "https://covers.openlibrary.org/b/id/#{book_response["covers"][0]}-L.jpg" : PLACEHOLDER_IMAGE_URL, # there is an array of several covers to choose from here
         description: book_response["description"] ? format_description(book_response["description"]["value"]) : "",
         # language: book["language_code"], # too many of these to be practical
       }
@@ -84,30 +85,34 @@ module Openlibrary
       page_start: results["start"].to_i,
       page_end: (results["start"].to_i + BOOKS_PER_PAGE),
       total_pages: (results["num_found"].to_f / BOOKS_PER_PAGE).floor,
-      books: results["docs"].map! { |result| format_book(result, without_covers) }.compact!,
+      books: results["docs"].map! { |result| format_book(result, without_covers) }.compact,
     }
   end
 
   def self.format_book(result, without_covers)
     # Don't return books without covers or authors
-    return nil if book_missing_info?(result) && !without_covers
+    return nil if book_missing_info?(result, without_covers)
     {
       source_id: result["key"].gsub("/works/", ""),
       source: OPENLIBRARY,
       title: result["title"],
       published_year: result["first_publish_year"],
-      cover_url: "https://covers.openlibrary.org/b/id/#{result["cover_i"]}-L.jpg",
+      cover_url: result["cover_i"] ? "https://covers.openlibrary.org/b/id/#{result["cover_i"]}-L.jpg" : PLACEHOLDER_IMAGE_URL,
       authors: result["author_name"], # array of strings
     }
   end
 
-  def self.book_missing_info?(result)
-    # To clean up results further, filter out books missing these values:
-    # result["id_amazon"]
-    # result["has_fulltext"]
-    !result["cover_i"] ||
-    result["cover_i"] == -1 ||
-    !result["author_name"]
+  def self.book_missing_info?(result, without_covers)
+    if !without_covers
+      # To clean up results further, filter out books missing these values:
+      # result["id_amazon"]
+      # result["has_fulltext"]
+      !result["cover_i"] ||
+      result["cover_i"] == -1 ||
+      !result["author_name"]
+    else
+      !result["author_name"]
+    end
   end
 
   def self.format_author(result)
