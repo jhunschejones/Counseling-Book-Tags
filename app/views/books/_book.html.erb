@@ -1,0 +1,9 @@
+<a class="book-card" href="/books/<%= "#{book[:source_id]}?source=#{book[:source]}" %>">
+  <%= image_tag(book[:cover_url], class: "cover", alt: "Book Cover") %>
+  <div class="book-card-footer">
+    <p class="title"><%= truncate(book[:title], length: 45) %></p>
+    <p class="author">
+      <%= truncate(book[:authors] ? book[:authors][0] : book.authors[0].name, length: 46) %>
+    </p>
+  </div>
+</a>

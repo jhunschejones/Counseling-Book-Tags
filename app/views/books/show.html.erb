@@ -45,18 +45,7 @@
       <%= render partial: "create_tag_modal", locals: { book: @book } %>
 
       <div class="field is-grouped is-grouped-multiline tags-container">
-        <% @tags.each do |tag| %>
-          <div class="control" data-tag-id="<%= tag[:id] %>">
-            <div class="tags has-addons">
-              <% if tag[:user_id] == @user.id %>
-                <a class="tag is-primary is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>
-                <%= link_to("", tag_path(tag), method: :delete, remote: true, class: "tag is-delete is-primary is-medium", data: { confirm: "Are you sure you want to delete the \'#{tag[:text]}\' tag?" }) %>
-              <% else %>
-                <a class="tag is-info is-medium" href="/books?tags[]=<%= tag[:text] %>"><%= tag[:text] %></a>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
+        <%= render @tags %>
       </div>
     </div>
     <div class="tab-content comments" data-controller="comment-modal">
@@ -73,9 +62,7 @@
       <%= render partial: "edit_comment_modal", locals: { book: @book } %>
 
       <div class="comments-container">
-        <% @comments.each do |comment| %>
-          <%= render partial: 'comments/comment', locals: { user: @user, comment: comment } %>
-        <% end %>
+        <%= render @comments %>
       </div>
     </div>
     <div class="tab-content description">

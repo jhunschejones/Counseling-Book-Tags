@@ -9,7 +9,7 @@
           "<span class="comment-body"><%= comment.html_safe_body.html_safe %></span>"
         </p>
       </div>
-      <% if comment.user.id == user.id %>
+      <% if comment.user.id == @user.id %>
         <%# `is-mobile` tells bulma to keep these horizontal on mobile as well as desktop %>
         <nav class="level is-mobile">
           <div class="level-left"></div>
