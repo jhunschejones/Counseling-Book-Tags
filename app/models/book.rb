@@ -7,7 +7,7 @@ class Book < ApplicationRecord
   OPENLIBRARY = "openlibrary".freeze
   GOODREADS = "goodreads".freeze
   SOURCES = [GOODREADS, OPENLIBRARY].freeze
-  NOT_KEYWORDS = ["AND", "THE", "OR", "OF", "A"].freeze
+  IGNORED_KEYWORDS = ["AND", "THE", "OR", "OF", "A"].freeze
 
   def self.by_tags(tags)
     Book.eager_load(:authors, :tags).where("searchable_tags @> array[?]::varchar[]", tags)
@@ -84,15 +84,12 @@ class Book < ApplicationRecord
   end
 
   def self.title_keywords(title)
-    # remove non-word, non-space characters
-    title.gsub(/[^\w\s]/, "").upcase.split.map do |word|
-      word = word.strip
-      if NOT_KEYWORDS.include?(word) || !word.present?
-        nil
-      else
-        word
-      end
-    end.compact.uniq
+    title
+      .gsub(/[^\w\s]/, "") # remove non-word, non-space characters
+      .upcase
+      .split
+      .select { |word| word.present? && !IGNORED_KEYWORDS.include?(word) }
+      .uniq
   end
 
   private
