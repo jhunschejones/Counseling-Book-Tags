@@ -3,28 +3,33 @@ require 'httparty'
 module Openlibrary
   class BookNotFound < StandardError; end
   class UnrecognizedSearchType < StandardError; end
+
+  BookSearchResult = Struct.new(:source_id, :source, :title, :authors, :published_year, :cover_url)
+  BookSearchAuthor = Struct.new(:name)
+
   BOOKS_PER_PAGE = 200
   OPENLIBRARY = "openlibrary".freeze
-  AUTHOR_ROLE = "/type/author_role".freeze
+  AUTHOR_ROLE_TYPE = "/type/author_role".freeze
   PLACEHOLDER_IMAGE_URL = "https://www.abbeville.com/assets/common/images/edition_placeholder.png".freeze
+  EXTERNAL_REQUEST_TIMEOUT = 8
 
   def self.search_by_title(title, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:title:#{title}") do
-      response = HTTParty.get("https://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
+      response = HTTParty.get("https://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
       format_book_results(response, page, without_covers)
     end
   end
 
   def self.search_by_author(author, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:author:#{author}") do
-      response = HTTParty.get("https://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
+      response = HTTParty.get("https://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
       format_book_results(response, page, without_covers)
     end
   end
 
   def self.search_by_isbn(isbn, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:isbn:#{isbn}") do
-      response = HTTParty.get("https://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: 12, format: :json }).parsed_response
+      response = HTTParty.get("https://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
       format_book_results(response, page, without_covers)
     end
   end
@@ -43,23 +48,24 @@ module Openlibrary
 
   def self.book_details(book_id)
     Rails.cache.fetch("source:openlibrary:book_id:#{book_id}") do
-      book_response = HTTParty.get("https://openlibrary.org/works/#{book_id}.json", { timeout: 12, format: :json }).parsed_response
-      raise BookNotFound if book_response["error"] == "notfound"
-      author_responses = book_response["authors"].select { |a| a["type"]["key"] == AUTHOR_ROLE }.map do |author|
+      book_details_response = HTTParty.get("https://openlibrary.org/works/#{book_id}.json", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
+      raise BookNotFound if book_details_response["error"] == "notfound"
+      book_details_authors = book_details_response["authors"].select { |a| a["type"] == AUTHOR_ROLE_TYPE || a["type"]["key"] == AUTHOR_ROLE_TYPE }
+      author_responses = book_details_authors.map! do |author|
         author_id = author["author"]["key"].gsub("/authors/", "")
-        HTTParty.get("https://openlibrary.org/authors/#{author_id}.json", { timeout: 12, format: :json }).parsed_response
+        HTTParty.get("https://openlibrary.org/authors/#{author_id}.json", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
       end
-      book_search = author_responses.length > 0 ? HTTParty.get("https://openlibrary.org/search.json?title=#{URI.escape(book_response["title"])}&author=#{URI.escape(author_responses[0]["name"])}&limit=1", { timeout: 12, format: :json }).parsed_response["docs"][0] : nil
+      book_search_response = author_responses.length > 0 ? HTTParty.get("https://openlibrary.org/search.json?title=#{URI.escape(book_details_response["title"])}&author=#{URI.escape(author_responses[0]["name"])}&limit=1", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response["docs"][0] : nil
       {
         source_id: book_id,
         source: OPENLIBRARY,
-        title: book_response["title"],
+        title: book_details_response["title"],
         authors: author_responses.map! { |a| format_author(a) },
-        isbns: book_search ? book_search["isbn"] : [0],
-        published_year: book_search ? (book_search["first_publish_year"] || book_search["publish_date"][0].gsub(/\D/, "")) : nil,
+        isbns: book_search_response ? book_search_response["isbn"] : [0],
+        published_year: book_search_response ? (book_search_response["first_publish_year"] || book_search_response["publish_date"][0].gsub(/\D/, "")) : nil,
         # publisher: book["publisher"], # too many of these to be practical
-        cover_url: book_response["covers"] ? "https://covers.openlibrary.org/b/id/#{book_response["covers"][0]}-L.jpg" : PLACEHOLDER_IMAGE_URL, # there is an array of several covers to choose from here
-        description: book_response["description"] ? format_description(book_response["description"]["value"]) : "",
+        cover_url: book_details_response["covers"] ? "https://covers.openlibrary.org/b/id/#{book_details_response["covers"][0]}-L.jpg" : PLACEHOLDER_IMAGE_URL, # there is an array of several covers to choose from here
+        description: book_details_response["description"] ? format_description(book_details_response["description"]["value"]) : "",
         # language: book["language_code"], # too many of these to be practical
       }
     end
@@ -92,14 +98,14 @@ module Openlibrary
   def self.format_book(result, without_covers)
     # Don't return books without covers or authors
     return nil if book_missing_info?(result, without_covers)
-    {
-      source_id: result["key"].gsub("/works/", ""),
-      source: OPENLIBRARY,
-      title: result["title"],
-      published_year: result["first_publish_year"],
-      cover_url: result["cover_i"] ? "https://covers.openlibrary.org/b/id/#{result["cover_i"]}-L.jpg" : PLACEHOLDER_IMAGE_URL,
-      authors: result["author_name"], # array of strings
-    }
+    BookSearchResult.new(
+      result["key"].gsub("/works/", ""),
+      OPENLIBRARY,
+      result["title"],
+      result["author_name"].map { |name| BookSearchAuthor.new(name) }, # convert array of strings to array of objects that respond to `.name`
+      result["first_publish_year"],
+      result["cover_i"] ? "https://covers.openlibrary.org/b/id/#{result["cover_i"]}-L.jpg" : PLACEHOLDER_IMAGE_URL,
+    )
   end
 
   def self.book_missing_info?(result, without_covers)

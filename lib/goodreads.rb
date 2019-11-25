@@ -4,16 +4,22 @@ module Goodreads
   class BookNotFound < StandardError; end
   class UnrecognizedSearchType < StandardError; end
 
+  BookSearchResult = Struct.new(:source_id, :source, :title, :authors, :published_year, :cover_url)
+  BookSearchAuthor = Struct.new(:name)
+
+  PLACEHOLDER_IMAGE_URL = "https://www.abbeville.com/assets/common/images/edition_placeholder.png".freeze
+  EXTERNAL_REQUEST_TIMEOUT = 8
+
   def self.search_by_title(title, page=1, without_covers=false)
     Rails.cache.fetch("source:goodreads:without_covers:#{without_covers}:title:#{title}:page:#{page}") do
-      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{title}&search[field]=title&page=#{page}", timeout: 12).parsed_response
+      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{title}&search[field]=title&page=#{page}", timeout: EXTERNAL_REQUEST_TIMEOUT).parsed_response
       format_book_results(response, page, without_covers)
     end
   end
 
   def self.search_by_author(author, page=1, without_covers=false)
     Rails.cache.fetch("source:goodreads:without_covers:#{without_covers}:author:#{author}:page:#{page}") do
-      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{author}&search[field]=author&page=#{page}", timeout: 12).parsed_response
+      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{author}&search[field]=author&page=#{page}", timeout: EXTERNAL_REQUEST_TIMEOUT).parsed_response
       format_book_results(response, page, without_covers)
     end
   end
@@ -21,14 +27,14 @@ module Goodreads
   # Goodreads API appears to only work with ISBN13?
   def self.search_by_isbn(isbn, page=1, without_covers=false)
     Rails.cache.fetch("source:goodreads:without_covers:#{without_covers}:isbn:#{isbn}:page:#{page}") do
-      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn}&search[field]=isbn&page=#{page}", timeout: 12).parsed_response
+      response = HTTParty.get("https://www.goodreads.com/search/index.xml?key=#{ENV["GOODREADS_KEY"]}&q=#{isbn}&search[field]=isbn&page=#{page}", timeout: EXTERNAL_REQUEST_TIMEOUT).parsed_response
       format_book_results(response, page, without_covers)
     end
   end
 
   def self.book_details(book_id)
     Rails.cache.fetch("source:goodreads:book_id:#{book_id}") do
-      response = HTTParty.get("https://www.goodreads.com/book/show.xml?key=#{ENV["GOODREADS_KEY"]}&id=#{book_id}", timeout: 12).parsed_response
+      response = HTTParty.get("https://www.goodreads.com/book/show.xml?key=#{ENV["GOODREADS_KEY"]}&id=#{book_id}", timeout: EXTERNAL_REQUEST_TIMEOUT).parsed_response
       raise BookNotFound if response["error"] == "Page not found"
       book = response["GoodreadsResponse"]["book"]
       authors =
@@ -57,7 +63,7 @@ module Goodreads
         # - `SY` is size on the y-axis
         # - `98` is the size in pixels
         #
-        cover_url: book["image_url"].gsub(/_\w{2}\d{1,3}_/, "_SX250_"),
+        cover_url: cover_or_placeholder(book["image_url"]),
         description: format_description(book["description"]),
         language: book["language_code"],
       }
@@ -94,6 +100,7 @@ module Goodreads
   end
 
   def self.format_description(description)
+    return "" unless description
     description
       .gsub(/(<br \/>){1,3}/, "<br /><br />") # only include break tags in sets of 2
       .gsub(/<i>|<\/i>/, "\"") # use quotes instead of <i> tags
@@ -131,12 +138,12 @@ module Goodreads
   def self.format_book(book_result, without_covers)
     # do not return books without a photo
     return nil if book_result["best_book"]["image_url"].include?("nophoto") && !without_covers
-    {
-      source_id: book_result["best_book"]["id"],
-      source: "goodreads",
-      title: book_result["best_book"]["title"],
-      authors: [book_result["best_book"]["author"]["name"]],
-      published_year: book_result["original_publication_year"],
+    BookSearchResult.new(
+      book_result["best_book"]["id"],
+      "goodreads",
+      book_result["best_book"]["title"],
+      [BookSearchAuthor.new(book_result["best_book"]["author"]["name"])],
+      book_result["original_publication_year"],
       #
       # "image_url" field ends like `3._SX98_.jpg`. This string can be adjusted to
       # return different size images. Values and their meanings are as follows:
@@ -145,7 +152,12 @@ module Goodreads
       # - `SY` is size on the y-axis
       # - `98` is the size in pixels
       #
-      cover_url: book_result["best_book"]["image_url"].gsub(/_\w{2}\d{1,3}_/, "_SX200_")
-    }
+      cover_or_placeholder(book_result["best_book"]["image_url"])
+    )
+  end
+
+  def self.cover_or_placeholder(cover_url)
+    return PLACEHOLDER_IMAGE_URL if cover_url.include?("nophoto")
+    cover_url.gsub(/_\w{2}\d{1,3}_/, "_SX250_")
   end
 end

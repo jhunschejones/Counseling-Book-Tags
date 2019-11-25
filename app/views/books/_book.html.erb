@@ -3,7 +3,7 @@
   <div class="book-card-footer">
     <p class="title"><%= truncate(book[:title], length: 45) %></p>
     <p class="author">
-      <%= truncate(book.respond_to?(:authors) ? book.authors[0].name : book[:authors][0], length: 46) %>
+      <%= truncate(book.authors[0].name, length: 46) %>
     </p>
   </div>
 </a>
