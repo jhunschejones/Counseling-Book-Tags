@@ -1,13 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  name: author one
   source: MyString
-  source_id: 
+  source_id:
   image: MyString
+  name_keywords: ["AUTHOR", "ONE"]
 
 two:
-  name: MyString
+  name: author two
   source: MyString
-  source_id: 
+  source_id:
   image: MyString
+  name_keywords: ["AUTHOR", "TWO"]
