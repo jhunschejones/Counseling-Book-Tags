@@ -8,7 +8,6 @@ class TagsController < ApplicationController
     tags = tag_params["text"].split(",").map do |tag|
       Tag.create(text: tag.strip, book_id: book.id, user_id: @user.id)
     end
-    UpdateSearchableTagsJob.perform_later(book)
 
     render json: { data: tags.map { |tag| {id: tag.id, type: "tag", attributes: {text: tag.text}} } }
   rescue ActiveRecord::RecordNotUnique
@@ -17,7 +16,6 @@ class TagsController < ApplicationController
 
   def destroy
     tag = Tag.eager_load(:book).where(id: params["id"].to_i, user_id: @user.id).first
-    UpdateSearchableTagsJob.set(wait: 2.seconds).perform_later(tag.book) if tag.present?
 
     # JSON API content deleted response
     head tag && tag.destroy ? :no_content : :internal_server_error

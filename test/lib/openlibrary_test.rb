@@ -4,12 +4,12 @@ require 'test_helper'
 class OpenlibraryTest < ActiveSupport::TestCase
   setup do
     @hp_one = Openlibrary::BookSearchResult.new(
-      "OL16313124W",
+      "OL82586W",
       "openlibrary",
-      "Harry Potter and the Chamber of Secrets",
+      "Harry Potter and the Deathly Hallows",
       [Openlibrary::BookSearchAuthor.new("J. K. Rowling")],
-      1998,
-      "https://covers.openlibrary.org/b/id/8108733-L.jpg",
+      2005,
+      "https://covers.openlibrary.org/b/id/8234415-L.jpg",
     )
   end
 

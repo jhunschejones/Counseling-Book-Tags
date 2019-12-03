@@ -9,7 +9,6 @@ class CreateBooks < ActiveRecord::Migration[6.0]
       t.string :cover_url
       t.text :description
       t.string :language
-      t.string :searchable_tags, array: true, default: []
       t.string :isbns, array: true, default: []
 
       t.timestamps

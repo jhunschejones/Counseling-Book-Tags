@@ -1,8 +1,8 @@
 require 'test_helper'
 
-# `bundle exec ruby -Itest /Users/jjones/Documents/GitHub/Counseling-Book-Tags/test/models/book_test.rb`
+# `rails test test/models/book_test.rb`
 class BookTest < ActiveSupport::TestCase
-  fixtures :books
+  fixtures :books, :tags
 
   describe "title_keywords" do
     test "ignores special characters and duplicate words" do
@@ -72,6 +72,23 @@ class BookTest < ActiveSupport::TestCase
     end
   end
 
+  describe "by_tags" do
+    test "returns books matching one tag" do
+      books = Book.by_tags([tags(:two).text])
+      assert_equal 2, books.size
+    end
+
+    test "returns books matching all tags" do
+      books = Book.by_tags([tags(:one).text, tags(:two).text])
+      assert_equal 1, books.size
+    end
+
+    test "does not return books only matching some tags" do
+      books = Book.by_tags([tags(:one).text, "tag that doesn't exist"])
+      assert_equal 0, books.size
+    end
+  end
+
   describe "find_or_create" do
     test "raises for unrecognized source" do
       exception = assert_raises(RuntimeError) { Book.find_or_create("library", "1") }
@@ -96,8 +113,8 @@ class BookTest < ActiveSupport::TestCase
       setup do
         # Douglas Adams, The Hitchhiker's Guide to the Galaxy
         Book.create_goodreads_book(16)
-        # J.K. Rowling, Harry Potter and the Chamber of Secrets
-        Book.create_openlibrary_book("OL16313124W")
+        # J.K. Rowling, Harry Potter and the Deathly Hallows
+        Book.create_openlibrary_book("OL82586W")
       end
 
       test "returns existing goodreads book from db" do
@@ -110,9 +127,9 @@ class BookTest < ActiveSupport::TestCase
 
       test "returns existing openlibrary book from db" do
         before_count = Book.count
-        book = Book.find_or_create("openlibrary", "OL16313124W")
+        book = Book.find_or_create("openlibrary", "OL82586W")
         assert_equal before_count, Book.count
-        assert_equal "Harry Potter and the Chamber of Secrets", book.title
+        assert_equal "Harry Potter and the Deathly Hallows", book.title
       end
     end
   end
@@ -132,8 +149,8 @@ class BookTest < ActiveSupport::TestCase
       end
 
       test "returns openlibrary book" do
-        book = Book.database_or_external("openlibrary", "OL16313124W")
-        assert_equal "Harry Potter and the Chamber of Secrets", book[:title]
+        book = Book.database_or_external("openlibrary", "OL82586W")
+        assert_equal "Harry Potter and the Deathly Hallows", book[:title]
         assert_nil book[:id] # no :id when not in database
       end
 
@@ -152,8 +169,8 @@ class BookTest < ActiveSupport::TestCase
       setup do
         # Douglas Adams, The Hitchhiker's Guide to the Galaxy
         Book.create_goodreads_book(3)
-        # J.K. Rowling, Harry Potter and the Chamber of Secrets
-        Book.create_openlibrary_book("OL16313124W")
+        # J.K. Rowling, Harry Potter and the Deathly Hallows
+        Book.create_openlibrary_book("OL82586W")
       end
 
       test "returns goodreads book" do
@@ -164,8 +181,8 @@ class BookTest < ActiveSupport::TestCase
       end
 
       test "returns openlibrary book" do
-        book = Book.database_or_external("openlibrary", "OL16313124W")
-        assert_equal "Harry Potter and the Chamber of Secrets", book[:title]
+        book = Book.database_or_external("openlibrary", "OL82586W")
+        assert_equal "Harry Potter and the Deathly Hallows", book[:title]
         refute_nil book[:id] # :id only exists on valid DB record
       end
     end

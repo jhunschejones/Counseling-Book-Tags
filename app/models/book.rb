@@ -9,10 +9,6 @@ class Book < ApplicationRecord
   SOURCES = [GOODREADS, OPENLIBRARY].freeze
   IGNORED_KEYWORDS = ["AND", "THE", "OR", "OF", "A"].freeze
 
-  def self.by_tags(tags)
-    Book.eager_load(:authors, :tags).where("searchable_tags @> array[?]::varchar[]", tags)
-  end
-
   def self.find_or_create(source, source_id)
     raise "Unrecognized source" unless SOURCES.include?(source)
     book = Book.where(source: source, source_id: source_id).first
@@ -53,6 +49,16 @@ class Book < ApplicationRecord
     else
       raise "Unrecognized search type"
     end
+  end
+
+  def self.by_tags(tag_text_list)
+    Book.eager_load(:authors, :tags).where("books.id IN (
+                                            SELECT tags.book_id FROM tags
+                                            WHERE tags.text IN (:tags_list)
+                                            GROUP BY tags.book_id
+                                            HAVING COUNT(DISTINCT tags.text) = :tags_count)",
+                                            tags_list: tag_text_list,
+                                            tags_count: tag_text_list.size)
   end
 
   def self.create_goodreads_book(book_id)
