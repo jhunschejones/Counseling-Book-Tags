@@ -5,6 +5,6 @@ class AddPasswordResetColumnsToUser < ActiveRecord::Migration[6.0]
     add_column :users, :email_verification_token, :string
     add_column :users, :email_verification_sent_at, :datetime
     add_column :users, :unconfirmed_email, :string
-    add_column :users, :verified, :boolean, default: false
+    add_column :users, :is_verified, :boolean, default: false
   end
 end

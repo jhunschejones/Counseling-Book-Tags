@@ -1,25 +1,42 @@
 class UsersController < ApplicationController
   skip_before_action :authenticate_user, only: [:new, :create]
 
-  def new
-    @user = User.new
-  end
-
   def show
-    if params[:id].to_i != @user.id
+    if params[:id] != @user.id.to_s
       flash[:alert] = "You cannot access information for another user"
       redirect_to user_path(@user)
     end
   end
 
+  def new
+    @user = User.new
+  end
+
   def edit
-    if params[:id].to_i != @user.id
+    if params[:id] != @user.id.to_s
       flash[:alert] = "You cannot edit information for another user"
       redirect_to edit_user_path(@user)
     end
   end
 
+  def create
+    @user = User.new(user_params)
+
+    if @user.save
+      @user.generate_email_verification_token!
+      UserMailer.welcome_email(@user).deliver_later
+      redirect_to login_url, notice: "User #{@user.email} was successfully created. Please follow the verification link in your email."
+    else
+      render :new
+    end
+  end
+
   def update
+    if params[:id] != @user.id.to_s
+      flash[:alert] = "You cannot update information for another user"
+      redirect_to user_path(@user)
+    end
+
     if user_params[:name] && user_params[:name] != @user.name
       @user.update(name: user_params[:name])
     end
@@ -38,18 +55,6 @@ class UsersController < ApplicationController
     end
 
     redirect_to user_path(@user)
-  end
-
-  def create
-    @user = User.new(user_params)
-
-    if @user.save
-      @user.generate_email_verification_token!
-      UserMailer.welcome_email(@user).deliver_later
-      redirect_to login_url, notice: "User #{@user.email} was successfully created. Please follow the verification link in your email."
-    else
-      render :new
-    end
   end
 
   private

@@ -1,6 +1,9 @@
 class PasswordsController < ApplicationController
   skip_before_action :authenticate_user
 
+  def new
+  end
+
   def forgot
     if params[:email].blank?
       return redirect_to login_url, alert: 'Email not present'
@@ -14,9 +17,6 @@ class PasswordsController < ApplicationController
     end
     # Do not tell the user if an account exists for a specified email
     redirect_to login_url, notice: 'Please check your email for a password reset link'
-  end
-
-  def new
   end
 
   def reset

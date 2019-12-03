@@ -21,7 +21,7 @@ class EmailsController < ApplicationController
         render :new, alert: user.errors.full_messages
       end
     else
-      redirect_to login_url, alert: "Link not valid or expired. Use 'forgot password' to generate a new link."
+      redirect_to login_url, alert: "Invalid link. Use 'forgot password' to generate a new link."
     end
   end
 end

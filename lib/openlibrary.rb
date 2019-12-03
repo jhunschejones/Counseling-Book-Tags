@@ -15,32 +15,35 @@ module Openlibrary
 
   def self.search_by_title(title, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:title:#{title}") do
-      response = HTTParty.get("https://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
-      format_book_results(response, page, without_covers)
+      response_json = HTTParty.get("https://openlibrary.org/search.json?title=#{title}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
+      format_book_results(response_json, page, without_covers)
     end
   end
 
   def self.search_by_author(author, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:author:#{author}") do
-      response = HTTParty.get("https://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
-      format_book_results(response, page, without_covers)
+      response_json = HTTParty.get("https://openlibrary.org/search.json?author=#{author}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
+      format_book_results(response_json, page, without_covers)
     end
   end
 
   def self.search_by_isbn(isbn, page=1, without_covers=false)
     Rails.cache.fetch("source:openlibrary:without_covers:#{without_covers}:isbn:#{isbn}") do
-      response = HTTParty.get("https://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
-      format_book_results(response, page, without_covers)
+      response_json = HTTParty.get("https://openlibrary.org/search.json?isbn=#{isbn}&limit=#{BOOKS_PER_PAGE}&page=#{page}", { timeout: EXTERNAL_REQUEST_TIMEOUT, format: :json }).parsed_response
+      format_book_results(response_json, page, without_covers)
     end
   end
 
   def self.search_by_query_params(params)
+    page = params[:page] || 1
+    without_covers = params[:without_covers] || false
+
     if params[:title]
-      Openlibrary.search_by_title(params[:title], params[:page] || 1, params[:without_covers] || false)
+      search_by_title(params[:title], page, without_covers)
     elsif params[:author]
-      Openlibrary.search_by_author(params[:author], params[:page] || 1, params[:without_covers] || false)
+      search_by_author(params[:author], page, without_covers)
     elsif params[:isbn]
-      Openlibrary.search_by_isbn(params[:isbn], params[:page] || 1, params[:without_covers] || false)
+      search_by_isbn(params[:isbn], page, without_covers)
     else
       raise UnrecognizedSearchType
     end
@@ -63,10 +66,10 @@ module Openlibrary
         authors: author_responses.map! { |a| format_author(a) },
         isbns: book_search_response ? book_search_response["isbn"] : [0],
         published_year: book_search_response ? (book_search_response["first_publish_year"] || book_search_response["publish_date"][0].gsub(/\D/, "")) : nil,
-        # publisher: book["publisher"], # too many of these to be practical
+        publisher: book_details_response["publisher"], # too many of these to be practical
         cover_url: book_details_response["covers"] ? "https://covers.openlibrary.org/b/id/#{book_details_response["covers"][0]}-L.jpg" : PLACEHOLDER_IMAGE_URL, # there is an array of several covers to choose from here
         description: book_details_response["description"] ? format_description(book_details_response["description"]["value"]) : "",
-        # language: book["language_code"], # too many of these to be practical
+        language: book_details_response["language_code"], # too many of these to be practical
       }
     end
   end
@@ -83,16 +86,24 @@ module Openlibrary
 
   def self.format_book_results(results, page, without_covers)
     if results["num_found"].to_i == 0
-      return { total_results: 0, current_page: 1, page_start: 0, page_end: 0, total_pages: 1, books: [] }
+      {
+        total_results: 0,
+        current_page: 1,
+        page_start: 0,
+        page_end: 0,
+        total_pages: 1,
+        books: []
+      }
+    else
+      {
+        total_results: results["num_found"].to_i,
+        current_page: page.to_i,
+        page_start: results["start"].to_i,
+        page_end: (results["start"].to_i + BOOKS_PER_PAGE),
+        total_pages: (results["num_found"].to_f / BOOKS_PER_PAGE).floor,
+        books: results["docs"].map! { |result| format_book(result, without_covers) }.compact,
+      }
     end
-    {
-      total_results: results["num_found"].to_i,
-      current_page: page.to_i,
-      page_start: results["start"].to_i,
-      page_end: (results["start"].to_i + BOOKS_PER_PAGE),
-      total_pages: (results["num_found"].to_f / BOOKS_PER_PAGE).floor,
-      books: results["docs"].map! { |result| format_book(result, without_covers) }.compact,
-    }
   end
 
   def self.format_book(result, without_covers)
@@ -110,9 +121,13 @@ module Openlibrary
 
   def self.book_missing_info?(result, without_covers)
     if !without_covers
-      # To clean up results further, filter out books missing these values:
+      #
+      # To clean up results further in the future, try filtering out books
+      # missing the following values:
+      #
       # result["id_amazon"]
       # result["has_fulltext"]
+      #
       !result["cover_i"] ||
       result["cover_i"] == -1 ||
       !result["author_name"]
@@ -129,6 +144,8 @@ module Openlibrary
       image: result["photos"] ? "https://covers.openlibrary.org/b/id/#{result["photos"][0]}-L.jpg" : nil, # there is an array of several images to choose from here
     }
   end
+
+  private_class_method :format_description, :format_book_results, :format_book, :book_missing_info?, :format_author
 
   # Official API
   # https://openlibrary.org/query.json?type=/type/work&title=#{title}&limit=20&*=

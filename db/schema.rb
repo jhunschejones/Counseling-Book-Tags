@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_11_055118) do
+ActiveRecord::Schema.define(version: 2019_12_03_045234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 2019_11_11_055118) do
     t.string "email_verification_token"
     t.datetime "email_verification_sent_at"
     t.string "unconfirmed_email"
-    t.boolean "verified", default: false
+    t.boolean "is_verified", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

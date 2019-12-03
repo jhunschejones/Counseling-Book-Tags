@@ -12,8 +12,8 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:email])
 
-    if user && !user.verified
-      redirect_to login_url, notice: "Please follow the email verification link to activate your account, or preform a password reset to generate a new link"
+    if user && !user.is_verified
+      redirect_to login_url, notice: "Please follow the email verification link to activate your account, or perform a password reset to generate a new link"
     elsif user.try(:authenticate, params[:password])
       session[:user_id] = user.id
       flash.discard
@@ -24,8 +24,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:user_id] = nil
-    session[:return_to] = nil
+    reset_session
     redirect_to login_url, notice: "Succesfully logged out"
   end
 end

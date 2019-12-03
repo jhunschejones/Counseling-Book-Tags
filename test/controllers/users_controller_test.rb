@@ -17,7 +17,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     test "creates unverified user record" do
       post "/users/new", params: { user: { name: "new user", email: "newuser@dafox.com", password: "secret", password_confirmation: "secret" } }
       assert_equal "newuser@dafox.com", User.last.email
-      refute User.last.verified
+      refute User.last.is_verified
     end
 
     describe "when there are user model errors" do

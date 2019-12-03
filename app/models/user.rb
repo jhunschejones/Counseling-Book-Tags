@@ -21,7 +21,7 @@ class User < ApplicationRecord
    end
 
    def reset_password!(password)
-    self.verified = true
+    self.is_verified = true
     self.email_verification_token = nil
     self.reset_password_token = nil
     self.password = password
@@ -29,7 +29,7 @@ class User < ApplicationRecord
    end
 
    def verify_email!
-    self.verified = true
+    self.is_verified = true
     self.email_verification_token = nil
     save!
    end

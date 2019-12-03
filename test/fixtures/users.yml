@@ -4,10 +4,10 @@ one:
   name: Carl Fox
   email: carl@dafox.com
   password_digest: <%= BCrypt::Password.create('secret') %>
-  verified: true
+  is_verified: true
 
 two:
   name: Daisy Bear
   email: daisy@dafox.com
   password_digest: <%= BCrypt::Password.create('secret') %>
-  verified: true
+  is_verified: true
