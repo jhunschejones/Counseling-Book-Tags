@@ -129,7 +129,7 @@ class BookTest < ActiveSupport::TestCase
         before_count = Book.count
         book = Book.find_or_create("openlibrary", "OL82586W")
         assert_equal before_count, Book.count
-        assert_equal "Harry Potter and the Deathly Hallows", book.title
+        assert_equal "Harry Potter and the Deathly Hallows (Harry Potter #7)", book.title
       end
     end
   end
@@ -150,7 +150,7 @@ class BookTest < ActiveSupport::TestCase
 
       test "returns openlibrary book" do
         book = Book.database_or_external("openlibrary", "OL82586W")
-        assert_equal "Harry Potter and the Deathly Hallows", book[:title]
+        assert_equal "Harry Potter and the Deathly Hallows (Harry Potter #7)", book[:title]
         assert_nil book[:id] # no :id when not in database
       end
 
@@ -182,7 +182,7 @@ class BookTest < ActiveSupport::TestCase
 
       test "returns openlibrary book" do
         book = Book.database_or_external("openlibrary", "OL82586W")
-        assert_equal "Harry Potter and the Deathly Hallows", book[:title]
+        assert_equal "Harry Potter and the Deathly Hallows (Harry Potter #7)", book[:title]
         refute_nil book[:id] # :id only exists on valid DB record
       end
     end

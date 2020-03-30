@@ -6,7 +6,7 @@ class OpenlibraryTest < ActiveSupport::TestCase
     @hp_one = Openlibrary::BookSearchResult.new(
       "OL82586W",
       "openlibrary",
-      "Harry Potter and the Deathly Hallows",
+      "Harry Potter and the Deathly Hallows (Harry Potter #7)",
       [Openlibrary::BookSearchAuthor.new("J. K. Rowling")],
       2005,
       "https://covers.openlibrary.org/b/id/8234415-L.jpg",
