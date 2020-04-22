@@ -1,9 +1,3 @@
-#!/usr/bin/env ruby
-require 'fileutils'
+#!/bin/bash
 
-# path to your application root.
-APP_ROOT = File.expand_path('..', __dir__)
-
-FileUtils.chdir APP_ROOT do
-  system '. ./tmp/.env && PARALLEL_WORKERS=5 rails test'
-end
+. ./tmp/.env && PARALLEL_WORKERS=5 bundle exec rails test
