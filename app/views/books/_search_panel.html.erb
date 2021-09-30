@@ -12,7 +12,7 @@
       <p class="control has-icons-left">
         <%# input `placeholder` should match default tab on panel %>
         <input class="input is-info" type="text" placeholder="Search by title..."
-               data-target="search-panel.search" data-action="keydown->search-panel#search">
+               data-search-panel-target="search" data-action="keydown->search-panel#search">
         <span class="icon is-left">
           <i class="fas fa-search" aria-hidden="true"></i>
         </span>
@@ -20,15 +20,15 @@
     </div>
     <a class="panel-block radio-header">Choose a search source:</a>
     <label class="panel-block">
-      <input type="radio" name="source" value="database" checked data-target="search-panel.database">
+      <input type="radio" name="source" value="database" checked data-search-panel-target="database">
       <p class="radio-option">Counseling Book Tags Library</p>
     </label>
     <label class="panel-block">
-      <input type="radio" name="source" value="goodreads" data-target="search-panel.goodreads">
+      <input type="radio" name="source" value="goodreads" data-search-panel-target="goodreads">
       <p class="radio-option">Goodreads</p>
     </label>
     <label class="panel-block">
-      <input type="radio" name="source" value="openlibrary" data-target="search-panel.openlibrary">
+      <input type="radio" name="source" value="openlibrary" data-search-panel-target="openlibrary">
       <p class="radio-option">Openlibrary</p>
     </label>
     <a class="panel-block radio-header advanced-search-dropdown" data-action="click->search-panel#toggleAdvanced">
@@ -38,7 +38,7 @@
       </span>
     </a>
     <label class="panel-block checkbox is-hidden search-without-covers">
-      <input type="checkbox" data-target="search-panel.withoutCovers">
+      <input type="checkbox" data-search-panel-target="withoutCovers">
       <span>Include books without covers <span class="has-text-danger">(less acurate results)</span></span>
     </label>
   </article>

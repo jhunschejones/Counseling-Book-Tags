@@ -1,9 +1,9 @@
 <div class="search-container" data-controller="search">
-  <div class="search-spacer" data-target="search.spacer"></div>
+  <div class="search-spacer" data-search-target="spacer"></div>
   <div class="field has-addons">
     <p class="control">
       <span class="select">
-        <select data-target="search.select">
+        <select data-search-target="select">
           <option value="title">Title</option>
           <option value="author">Author</option>
           <option value="isbn">ISBN</option>
@@ -11,13 +11,13 @@
       </span>
     </p>
     <p class="control has-icons-left is-expanded">
-      <input class="input" type="text" placeholder="Search for books..." data-target="search.searchInput">
+      <input class="input" type="text" placeholder="Search for books..." data-search-target="searchInput">
       <span class="icon is-small is-left">
         <i class="fas fa-search"></i>
       </span>
     </p>
     <p class="control">
-      <a class="button is-info" data-action="click->search#search" data-target="search.searchButton">
+      <a class="button is-info" data-action="click->search#search" data-search-target="searchButton">
         Search
       </a>
     </p>
