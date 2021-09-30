@@ -103,8 +103,8 @@ class BookTest < ActiveSupport::TestCase
       end
 
       test "creates new book from openlibrary" do
-        Book.find_or_create("openlibrary", "OL82592W")
-        assert_equal "OL82592W", Book.last.source_id
+        Book.find_or_create("openlibrary", "OL82563W")
+        assert_equal "OL82563W", Book.last.source_id
         assert_equal "openlibrary", Book.last.source
       end
     end

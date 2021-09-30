@@ -155,7 +155,7 @@ module Openlibrary
   # https://openlibrary.org/search.json?title=harry%20potter&limit=20
   # https://openlibrary.org/search.json?author=rowling&limit=20
   # returns a `cover_i` field which can be used to get the cover here: `https://covers.openlibrary.org/b/id/8302846-L.jpg`
-  # returns a `key` field which can be used to get book details here: `https://openlibrary.org/works/OL82592W.json` or here: `https://openlibrary.org/query.json?type=/type/work&key=/works/OL82592W&*=`
+  # returns a `key` field which can be used to get book details here: `https://openlibrary.org/works/OL82563W.json` or here: `https://openlibrary.org/query.json?type=/type/work&key=/works/OL82563W&*=`
   # neither of the details pages give author information, you can get an author id from the `authors` array by type, then get more info here `https://openlibrary.org/authors/OL23919A.json`
 
   # Covers API
