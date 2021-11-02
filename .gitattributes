@@ -1,2 +1,2 @@
-app/assets/stylesheets/bulma_components/* linguist-vendored
-app/assets/stylesheets/bulma.scss linguist-vendored
+app/assets/stylesheets/bulma_components/*.sass linguist-vendored
+app/assets/stylesheets/bulma.sass linguist-vendored
