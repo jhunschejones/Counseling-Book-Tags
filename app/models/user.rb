@@ -8,29 +8,29 @@ class User < ApplicationRecord
     self.reset_password_token = SecureRandom.hex(10)
     self.reset_password_sent_at = Time.now.utc
     save!
-   end
+  end
 
-   def generate_email_verification_token!
+  def generate_email_verification_token!
     self.email_verification_token = SecureRandom.hex(10)
     self.email_verification_sent_at = Time.now.utc
     save!
-   end
+  end
 
-   def password_token_valid?
+  def password_token_valid?
     (self.reset_password_sent_at + 4.hours) > Time.now.utc
-   end
+  end
 
-   def reset_password!(password)
+  def reset_password!(password)
     self.is_verified = true
     self.email_verification_token = nil
     self.reset_password_token = nil
     self.password = password
     save!
-   end
+  end
 
-   def verify_email!
+  def verify_email!
     self.is_verified = true
     self.email_verification_token = nil
     save!
-   end
+  end
 end
